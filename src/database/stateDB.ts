@@ -22,8 +22,8 @@ export async function setUserState(address: string, published_num: number, recei
         VALUES (?, CURDATE(), ?, ?, ?)  
         ON DUPLICATE KEY UPDATE 
             published_num = VALUES(published_num), 
-            received_stories = VALUES(received_num),
-            sent_whiskey = VALUES(sent_whiskey_num)`,
+            received_num = VALUES(received_num),
+            sent_whiskey_num = VALUES(sent_whiskey_num)`,
         [address, published_num, received_num, sent_whiskey_num]
     );
 }

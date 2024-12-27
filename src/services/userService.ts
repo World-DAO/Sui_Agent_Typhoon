@@ -1,7 +1,10 @@
+import { getUserState, setUserState, UserState } from "../database/stateDB";
+import { createUser, getUserByAddress, User } from "../database/userDB";
+
 interface UserDailyState {
-    publishedStory: boolean;
-    receivedStories: boolean;
-    sentWhiskey: boolean;
+    published_num: number;
+    received_num: number;
+    sent_whiskey_num: number;
     date: Date;
 }
 
@@ -10,15 +13,37 @@ export class UserService {
        * login if address exist
        * create new user if address unexist
        */
-    static async getUser(address: string) {
-
+    static async getUser(address: string): Promise<User> {
+        let user = await getUserByAddress(address);
+        if (user == null) {
+            const createdUser = await createUser(address);
+            if (createdUser == null) {
+                throw new Error("Failed to create user.");
+            }
+            user = createdUser;
+        }
+        await UserService.getDailyState(address);
+        return user;
     }
 
     /**
-       * login if address exist
-       * create new user if address unexist
+       * get daily state of user
+       * if never update in 1 day, reset
        */
-    static async getDailyState(address: string) {
-
+    static async getDailyState(address: string): Promise<UserState> {
+        const dailyState = await getUserState(address);
+        let state: UserDailyState;
+        if (dailyState) {
+            state = dailyState;
+        } else {
+            // 如果没有找到当天的状态，初始化为默认值
+            await setUserState(address, 0, 0, 0);
+            const newState = await getUserState(address);
+            if (!newState) {
+                throw new Error("Failed to initialize user daily state.");
+            }
+            state = newState;
+        }
+        return dailyState;
     }
 }

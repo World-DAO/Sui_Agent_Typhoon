@@ -18,6 +18,11 @@ export async function createUser(address: string): Promise<User> {
     return user!;
 }
 
+export async function getUserPoints(address: string): Promise<number> {
+    const rows = await query('SELECT total_points FROM User WHERE address = ?', [address]);
+    return rows[0];
+}
+
 export async function updateUserPoints(address: string, newPoints: number): Promise<User | null> {
     await query('UPDATE User SET total_points = ?, updated_at = NOW() WHERE address = ?', [newPoints, address]);
     return await getUserByAddress(address);
