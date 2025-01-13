@@ -20,7 +20,11 @@ export async function createUser(address: string): Promise<User> {
 
 export async function getUserPoints(address: string): Promise<number> {
     const rows = await query('SELECT total_points FROM User WHERE address = ?', [address]);
-    return rows[0];
+    const { total_points } = rows[0];
+    if (typeof total_points !== 'number') {
+        throw new Error(`Invalid total_points value for user ${address}.`);
+    }
+    return total_points;
 }
 
 export async function updateUserPoints(address: string, newPoints: number): Promise<User | null> {

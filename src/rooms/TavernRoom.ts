@@ -24,6 +24,8 @@ export class TavernRoom extends Room<TavernState> {
     this.onMessage("publishStory", this.handlePublishStory.bind(this));
     this.onMessage("fetchStory", this.handleFetchStories.bind(this));
     this.onMessage("sendWhiskey", this.handleSendWhiskey.bind(this));
+    this.onMessage("replyStory", this.handleReply.bind(this));
+    this.onMessage("getNewReplies", this.handleGetNewReply.bind(this));
   }
 
   onJoin(client: Client, options: any) {
@@ -102,17 +104,58 @@ export class TavernRoom extends Room<TavernState> {
    * 处理赠送威士忌请求
    */
   async handleSendWhiskey(client: Client, storyId: string) {
+    //console.log("id: " + storyId);
     const fromAddress = this.state.players.get(client.sessionId)?.address;
     if (!fromAddress) {
       client.send("error", { message: "User not authenticated." });
       return;
     }
-
     try {
       await StoryService.sendWhiskey(fromAddress, storyId);
       client.send("whiskeySent", { success: true });
     } catch (error: any) {
       client.send("whiskeySent", { success: false, reason: error.message });
+    }
+  }
+
+  /**
+    * 处理回复请求
+    */
+  async handleReply(client: Client, data: any) {
+    const address = this.state.players.get(client.sessionId)?.address;
+    if (!address) {
+      client.send("error", { message: "User not authenticated." });
+      return;
+    }
+
+    const { storyId, content } = data;
+
+    try {
+      const reply = await StoryService.replyStory(address, storyId, content);
+      client.send("replyResponse", { success: true, reply });
+
+      // 广播新回复给在线的用户
+      this.broadcast("newReply", { success: true, reply });
+    } catch (error: any) {
+      client.send("replyResponse", { success: false, reason: error.message });
+    }
+  }
+
+  /**
+    * 处理获取新回复请求
+    */
+  async handleGetNewReply(client: Client) {
+    const address = this.state.players.get(client.sessionId)?.address;
+    if (!address) {
+      client.send("error", { message: "User not authenticated." });
+      return;
+    }
+    try {
+      const replies = await StoryService.getNewReply(address);
+      console.log(replies);
+      client.send("getNewReplyResponse", { success: true, replies });
+    } catch (error: any) {
+      client.send("getNewReplyResponse", { success: false, reason: error.message });
     }
   }
 }
