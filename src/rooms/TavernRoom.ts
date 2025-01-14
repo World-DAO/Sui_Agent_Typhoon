@@ -2,6 +2,7 @@ import { Room, Client } from "@colyseus/core";
 import { MapSchema, Schema, type } from "@colyseus/schema";
 import { StoryService } from "../services/storyServices";
 import { UserService } from "../services/userService";
+import { ReplyService } from "../services/replyService";
 
 class Player extends Schema {
   @type("string")
@@ -24,8 +25,13 @@ export class TavernRoom extends Room<TavernState> {
     this.onMessage("publishStory", this.handlePublishStory.bind(this));
     this.onMessage("fetchStory", this.handleFetchStories.bind(this));
     this.onMessage("sendWhiskey", this.handleSendWhiskey.bind(this));
-    this.onMessage("replyStory", this.handleReply.bind(this));
-    this.onMessage("getNewReplies", this.handleGetNewReply.bind(this));
+    this.onMessage("getWhiskeyPoints", this.handleGetWhiskeyPoints.bind(this));
+    this.onMessage("updateWhiskeyPoints", this.handleUpdateWhiskeyPoints.bind(this));
+    this.onMessage("replyStory", this.handleReplyStory.bind(this));
+    this.onMessage("replyUser", this.handleReply.bind(this));
+    this.onMessage("getNewReply", this.handleGetNewReply.bind(this));
+    this.onMessage("markRepliesRead", this.handleMarkRepliesRead.bind(this));
+    this.onMessage("markRepliesUnread", this.handleMarkRepliesUnread.bind(this));
   }
 
   onJoin(client: Client, options: any) {
@@ -119,9 +125,43 @@ export class TavernRoom extends Room<TavernState> {
   }
 
   /**
-    * 处理回复请求
+   * 处理读取积分请求
+   */
+  async handleGetWhiskeyPoints(client: Client) {
+    const address = this.state.players.get(client.sessionId)?.address;
+    if (!address) {
+      client.send("error", { message: "User not authenticated." });
+      return;
+    }
+    try {
+      const points = UserService.getWhiskeyPoints(address);
+      client.send("getWhiskeyPointsResponse", { success: true, points });
+    } catch (error: any) {
+      client.send("getWhiskeyPointsResponse", { success: false, reason: error.message });
+    }
+  }
+
+  /**
+   * 处理更新积分请求
+   */
+  async handleUpdateWhiskeyPoints(client: Client, newPoints: number) {
+    const address = this.state.players.get(client.sessionId)?.address;
+    if (!address) {
+      client.send("error", { message: "User not authenticated." });
+      return;
+    }
+    try {
+      const user = UserService.updateWhiskeyPoints(address, newPoints);
+      client.send("updateWhiskeyPointsResponse", { success: true, user });
+    } catch (error: any) {
+      client.send("updateWhiskeyPointsResponse", { success: false, reason: error.message });
+    }
+  }
+
+  /**
+    * 处理回复故事请求
     */
-  async handleReply(client: Client, data: any) {
+  async handleReplyStory(client: Client, data: any) {
     const address = this.state.players.get(client.sessionId)?.address;
     if (!address) {
       client.send("error", { message: "User not authenticated." });
@@ -131,7 +171,30 @@ export class TavernRoom extends Room<TavernState> {
     const { storyId, content } = data;
 
     try {
-      const reply = await StoryService.replyStory(address, storyId, content);
+      const reply = await ReplyService.replyStory(address, storyId, content);
+      client.send("replyStoryResponse", { success: true, reply });
+
+      // 广播新回复给在线的用户
+      this.broadcast("newReply", { success: true, reply });
+    } catch (error: any) {
+      client.send("replyStoryResponse", { success: false, reason: error.message });
+    }
+  }
+
+  /**
+    * 处理回复请求
+    */
+  async handleReply(client: Client, data: any) {
+    const from_address = this.state.players.get(client.sessionId)?.address;
+    if (!from_address) {
+      client.send("error", { message: "User not authenticated." });
+      return;
+    }
+
+    const { to_address, content } = data;
+
+    try {
+      const reply = await ReplyService.replyBack(from_address, content, to_address);
       client.send("replyResponse", { success: true, reply });
 
       // 广播新回复给在线的用户
@@ -151,11 +214,45 @@ export class TavernRoom extends Room<TavernState> {
       return;
     }
     try {
-      const replies = await StoryService.getNewReply(address);
-      console.log(replies);
+      const replies = await ReplyService.getNewReply(address);
+      //console.log(replies);
       client.send("getNewReplyResponse", { success: true, replies });
     } catch (error: any) {
       client.send("getNewReplyResponse", { success: false, reason: error.message });
+    }
+  }
+
+  /***
+   * 处理标记已读请求
+   */
+  async handleMarkRepliesRead(client: Client, replies: string[]) {
+    const address = this.state.players.get(client.sessionId)?.address;
+    if (!address) {
+      client.send("error", { message: "User not authenticated." });
+      return;
+    }
+    try {
+      await ReplyService.markReplyRead(replies);
+      client.send("markRepliesReadResponse", { success: true });
+    } catch (error: any) {
+      client.send("markRepliesReadResponse", { success: false, reason: error.message });
+    }
+  }
+
+  /***
+   * 处理标记未读请求
+   */
+  async handleMarkRepliesUnread(client: Client, replies: string[]) {
+    const address = this.state.players.get(client.sessionId)?.address;
+    if (!address) {
+      client.send("error", { message: "User not authenticated." });
+      return;
+    }
+    try {
+      await ReplyService.markReplyUnread(replies);
+      client.send("markRepliesUnreadResponse", { success: true });
+    } catch (error: any) {
+      client.send("markRepliesUnreadResponse", { success: false, reason: error.message });
     }
   }
 }

@@ -89,6 +89,10 @@ export async function markReplyRead(reply_id: string) {
     await query(`UPDATE StoryReply SET unread = 0 WHERE id = ?`, [reply_id]);
 }
 
+export async function markReplyUnread(reply_id: string) {
+    await query(`UPDATE StoryReply SET unread = 1 WHERE id = ?`, [reply_id]);
+}
+
 export async function addWhiskeyPoints(storyId: string) {
     await query('UPDATE Story SET whiskey_points = whiskey_points + 1 WHERE id = ?', [storyId]);
 }

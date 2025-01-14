@@ -1,6 +1,6 @@
 // src/services/storyService.ts
 import { addUserReceivedStory, addUserSentWhiskey, getUserState } from '../database/stateDB';
-import { publishStory, getRandomStory, getStoryByAuthor, Story, addWhiskeyPoints, getStoryById, reply, getReplyByToAddress, Reply, getNewReplyByToAddress, markReplyRead } from '../database/storyDB';
+import { publishStory, getRandomStory, getStoryByAuthor, Story, addWhiskeyPoints, getStoryById, reply, getReplyByToAddress, Reply, getNewReplyByToAddress, markReplyRead, markReplyUnread } from '../database/storyDB';
 import { getUserPoints, updateUserPoints } from '../database/userDB';
 
 export class StoryService {
@@ -81,46 +81,4 @@ export class StoryService {
         await addWhiskeyPoints(storyId);
     }
 
-    /**
-     * 发布Story回复
-     */
-    static async replyStory(fromAddress: string, storyId: string, content: string) {
-        if (content.length === 0) {
-            throw new Error("Reply content cannot be empty.");
-        }
-        const toAddress = (await getStoryById(storyId)).author_address;
-        const _reply = await reply(fromAddress, storyId, content, toAddress);
-        //console.log(_reply)
-        if (_reply == null) {
-            throw new Error("Reply failed!");
-        }
-        return _reply;
-    }
-
-    /**
-     * 发布回复
-     */
-    static async replyBack(fromAddress: string, storyId: string, content: string, toAddress: string) {
-        if (content.length === 0) {
-            throw new Error("Reply content cannot be empty.");
-        }
-        const _reply = await reply(fromAddress, storyId, content, toAddress);
-        if (_reply == null) {
-            throw new Error("Reply failed!");
-        }
-    }
-
-    /**
-     * 获取新回复
-     */
-    static async getNewReply(address: string): Promise<Reply[]> {
-        return getNewReplyByToAddress(address);
-    }
-
-    /**
-     * 标记回复已读
-     */
-    static async markReplyRead(reply_id: string) {
-        markReplyRead(reply_id);
-    }
 }

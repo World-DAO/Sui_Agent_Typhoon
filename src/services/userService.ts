@@ -1,5 +1,5 @@
 import { getUserState, setUserState, UserState } from "../database/stateDB";
-import { createUser, getUserByAddress, User } from "../database/userDB";
+import { createUser, getUserByAddress, getUserPoints, updateUserPoints, User } from "../database/userDB";
 
 interface UserDailyState {
     published_num: number;
@@ -45,5 +45,13 @@ export class UserService {
             state = newState;
         }
         return dailyState;
+    }
+
+    static async getWhiskeyPoints(address: string): Promise<number> {
+        return getUserPoints(address);
+    }
+
+    static async updateWhiskeyPoints(address: string, newPoints: number): Promise<User | null> {
+        return updateUserPoints(address, newPoints);
     }
 }

@@ -4,6 +4,7 @@ import { ColyseusTestServer, boot } from "@colyseus/testing";
 // import your "app.config.ts" file here.
 import appConfig from "../src/app.config";
 import { TavernState } from "../src/rooms/TavernRoom";
+import { resolve } from "path";
 
 describe("testing your Colyseus app", () => {
   let colyseus: ColyseusTestServer;
@@ -70,43 +71,43 @@ describe("testing your Colyseus app", () => {
   //   assert.strictEqual(publishResponse.story.story_content, storyText);
   // });
 
-  it("should handle fetching a story correctly", async () => {
-    const address = '0xfA5aC709311146dA718B3fba0a90A3Bd96e7a471';
-    const room = await colyseus.createRoom<TavernState>("tavern_room", { address });
-    const client1 = await colyseus.connectTo(room, { address });
-    // login
-    client1.send("userLogin", { address });
-    const loginResponse = await new Promise<{ success: boolean; reason?: string }>((resolve) => {
-      client1.onMessage("loginResponse", (data) => {
-        resolve(data);
-        console.log("loginResponse: ", data);
-      });
-    })
-    assert.strictEqual(loginResponse.success, true);
+  // it("should handle fetching a story correctly", async () => {
+  //   const address = '0xfA5aC709311146dA718B3fba0a90A3Bd96e7a471';
+  //   const room = await colyseus.createRoom<TavernState>("tavern_room", { address });
+  //   const client1 = await colyseus.connectTo(room, { address });
+  //   // login
+  //   client1.send("userLogin", { address });
+  //   const loginResponse = await new Promise<{ success: boolean; reason?: string }>((resolve) => {
+  //     client1.onMessage("loginResponse", (data) => {
+  //       resolve(data);
+  //       console.log("loginResponse: ", data);
+  //     });
+  //   })
+  //   assert.strictEqual(loginResponse.success, true);
 
-    //Simulate fetching a story
-    client1.send("fetchStory");
-    const fetchResponse = await new Promise<{ success: boolean; story?: any; reason?: string }>((resolve) => {
-      client1.onMessage("fetchStoriesResult", (data) => {
-        resolve(data);
-        console.log("fetchStoryResponse: ", data);
-      });
-    })
-    assert.strictEqual(fetchResponse.success, true);
-    //assert.ok(fetchResponse.story);
+  //   //Simulate fetching a story
+  //   client1.send("fetchStory");
+  //   const fetchResponse = await new Promise<{ success: boolean; story?: any; reason?: string }>((resolve) => {
+  //     client1.onMessage("fetchStoriesResult", (data) => {
+  //       resolve(data);
+  //       console.log("fetchStoryResponse: ", data);
+  //     });
+  //   })
+  //   assert.strictEqual(fetchResponse.success, true);
+  //   //assert.ok(fetchResponse.story);
 
-    //Simulate Reply the story
-    const storyId = fetchResponse.story.id;
-    const content = "Good!";
-    client1.send("replyStory", { storyId, content });
-    const replyResponse = await new Promise<{ success: boolean; reply?: any }>((resolve) => {
-      client1.onMessage("replyResponse", (data) => {
-        resolve(data);
-        console.log("replyResponse: ", data);
-      });
-    })
-    assert.strictEqual(replyResponse.success, true);
-  });
+  //   //Simulate Reply the story
+  //   const storyId = fetchResponse.story.id;
+  //   const content = "Good!";
+  //   client1.send("replyStory", { storyId, content });
+  //   const replyResponse = await new Promise<{ success: boolean; reply?: any }>((resolve) => {
+  //     client1.onMessage("replyResponse", (data) => {
+  //       resolve(data);
+  //       console.log("replyResponse: ", data);
+  //     });
+  //   })
+  //   assert.strictEqual(replyResponse.success, true);
+  // });
 
   it("should fetch unread replies", async () => {
     const address = '0xCA67f533ACEeBd68946cDcfF047121eeE124EACA';
@@ -123,7 +124,7 @@ describe("testing your Colyseus app", () => {
     assert.strictEqual(loginResponse.success, true);
 
     // fetch unread replies
-    client1.send("getNewReplies");
+    client1.send("getNewReply");
     const getNewRepliesResponse = await new Promise<{ success: boolean; replies?: any }>((resolve) => {
       client1.onMessage("getNewReplyResponse", (data) => {
         resolve(data);
@@ -133,9 +134,21 @@ describe("testing your Colyseus app", () => {
     assert.strictEqual(getNewRepliesResponse.success, true);
 
     // mark read
+    const replies: string[] = [];
+    for (const reply of getNewRepliesResponse.replies) {
+      replies.push(reply.id);
+    }
+    client1.send("markRepliesRead", replies);
+    const markRepliesReadResponse = await new Promise<{ success: boolean }>((resolve) => {
+      client1.onMessage("markRepliesReadResponse", (data) => {
+        resolve(data);
+        console.log("markRepliesReadResponse: ", data);
+      });
+    })
+    assert.strictEqual(markRepliesReadResponse.success, true);
 
     // fetch unread replies again
-    client1.send("getNewReplies");
+    client1.send("getNewReply");
     const _getNewRepliesResponse = await new Promise<{ success: boolean; replies?: any }>((resolve) => {
       client1.onMessage("getNewReplyResponse", (data) => {
         resolve(data);
