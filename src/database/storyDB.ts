@@ -28,6 +28,17 @@ export async function publishStory(authorAddress: string, content: string): Prom
     return rows[0];
 }
 
+export async function deleteStory(storyId: string): Promise<boolean> {
+    try {
+        await query('DELETE FROM Story WHERE id = ?', [storyId]);
+        return true;
+    } catch (error) {
+        console.error('Error deleting story:', error);
+        return false;
+    }
+
+}
+
 export async function getRandomStory(): Promise<Story> {
     const rows = await query(
         `SELECT id, author_address, story_content, whiskey_points, created_at FROM Story ORDER BY RAND() LIMIT 1`,

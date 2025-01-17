@@ -1,6 +1,6 @@
 // src/services/storyService.ts
 import { addUserReceivedStory, addUserSentWhiskey, getUserState } from '../database/stateDB';
-import { publishStory, getRandomStory, getStoryByAuthor, Story, addWhiskeyPoints, getStoryById, reply, getReplyByToAddress, Reply, getNewReplyByToAddress, markReplyRead, markReplyUnread } from '../database/storyDB';
+import { publishStory, getRandomStory, getStoryByAuthor, Story, addWhiskeyPoints, getStoryById, reply, getReplyByToAddress, Reply, getNewReplyByToAddress, markReplyRead, markReplyUnread, deleteStory } from '../database/storyDB';
 import { getUserPoints, updateUserPoints } from '../database/userDB';
 
 export class StoryService {
@@ -22,6 +22,29 @@ export class StoryService {
         }
         const story = await publishStory(authorAddress, content);
         return story;
+    }
+
+    /**
+     * 删除故事
+     * @param authorAddress 用户地址
+     * @param storyId 故事Id
+     * @returns 删除是否成功
+     */
+    static async deleteStory(authorAddress: string, storyId: string): Promise<boolean> {
+        const story = await getStoryById(storyId);
+        if (story.author_address != authorAddress) {
+            throw new Error("This is not your story!");
+        }
+        return deleteStory(storyId);
+    }
+
+    /**
+     * 获取个人全部故事
+     * @returns 故事列表
+     */
+    static async getAllStory(address: string): Promise<Story[]> {
+        const stories = getStoryByAuthor(address);
+        return stories;
     }
 
     /**
