@@ -16,10 +16,19 @@ Run test cases:
 npm test
 ```
 
-Change your database config in `.env` and run:
+Change your database config in `.env` 
+```
+DATABASE_URL=
+
+// DATABASE_URL=mysql://root@127.0.0.1:3306/Bar
+
+JWT_SECRET="f9c8e7d1a6b2c3d4e5f67890abcdef1234567890abcdef1234567890abcdef12"
+```
+
+and run:
 ```shell
 source .env
 ```
 
-SQL database script in `sql` folder to create tables.
+run SQL database script in `sql` folder to create tables.
 
