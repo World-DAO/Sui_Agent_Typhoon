@@ -31,23 +31,46 @@
         ```json
         {
             "success": true, 
-            "reason": "string" // 若失败，提供失败原因
+            "challenge": "string"
         }
         ```
 
         Example:
         ```typescript
-        client.send("userLogin", { address: "0xfA5aC709311146dA718B3fba0a90A3Bd96e7a471" });
-        client.onMessage("loginResponse", (data) => {
-            if (data.success) {
-                console.log("登录成功！");
-            } else {
-                console.error("登录失败:", data.reason);
-            }
+        room.send("userLogin", { address: "0xfA5aC709311146dA718B3fba0a90A3Bd96e7a471" });
+        const loginChallenge = await new Promise<{ challenge: string }>((resolve, reject) => {
+            room.onMessage("loginChallenge", (data) => {
+                if (data.challenge) {
+                    resolve(data);
+                } else {
+                    reject(new Error("No challenge received"));
+                }
+            });
+            setTimeout(() => reject(new Error("loginChallenge timeout")), 5000);
         });
+        const signature = await wallet.signMessage(loginChallenge.challenge);
         ```
 
-    2. Publish Story
+    2. Login Signature 
+        功能：签名
+        Request:
+        `loginSignature`
+        ```json
+        {
+            "signature": "玩家对挑战信息的签名"
+        }
+        ```
+
+        Response:
+        `loginResponse`
+        ```json
+        {
+            "success": true,
+            "token": "JWT"
+        }
+        ```
+   
+    3. Publish Story
         功能：发布Story
         Request: 
         `publishStory`
@@ -79,7 +102,38 @@
         });
         ```
 
-    3. Fetch Story
+    4. Get All Stories by Author
+        功能：获取用户的所有Story
+        Request:
+        `getAllStory`
+
+        Response:
+        `getAllStoryResponse`
+        ```json
+        {
+            "success": true,
+            "stories": Story[] //故事对象列表
+        }
+        ```
+
+    5. Delete Story
+        功能：删除Story
+        Request:
+        `deleteStory`
+        ```json
+        {
+            "storyID": "string"
+        }
+        ```
+
+        Response:
+        ```json
+        {
+            "success": true
+        }
+        ```
+   
+    6. Fetch Story
         功能：发布Story
         Request: 
         `fetchStory`
@@ -106,7 +160,7 @@
         });
         ```
 
-    4. Reply to a story
+    7. Reply to a story
         功能：对Story发布回复
         Request: 
         `replyStory`
@@ -127,7 +181,7 @@
         }
         ```
 
-    5. Reply to user
+    8. Reply to user
         功能：回复用户（聊天）
         Request: 
         `replyUser`
@@ -147,7 +201,7 @@
         }
         ```
 
-    6. Get unread replies
+    9.  Get unread replies
         功能：获取未读回复
         Request: 
         `getNewReply`
@@ -188,7 +242,7 @@
         });
         ```
 
-    7. Mark replies as read
+    10. Mark replies as read
         功能：将指定的回复标记为已读，避免重复处理
         Request: 
         `markRepliesRead`
@@ -207,7 +261,7 @@
         }
         ```
 
-    8. Mark replies as unread
+    11. Mark replies as unread
         功能：将指定的回复标记为未读
         Request: 
         `markRepliesUnread`
@@ -226,7 +280,7 @@
         }
         ```
 
-    9. Send Whiskey Point
+    12. Send Whiskey Point
         功能：赠送一个威士忌积分
         Request: 
         `sendWhiskey`
@@ -245,7 +299,7 @@
         }
         ```
 
-    10. Get User Whiskey Point
+    13. Get User Whiskey Point
         功能：读取用户威士忌积分
         Request: 
         `getWhiskeyPoints`
@@ -260,7 +314,7 @@
         }
         ```
 
-    11. Update User Whiskey Point
+    14. Update User Whiskey Point
         功能：发布Story
         Request: 
         `updateWhiskeyPoints`

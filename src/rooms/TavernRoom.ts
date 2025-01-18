@@ -88,10 +88,9 @@ export class TavernRoom extends Room<TavernState> {
     return address;
   }
 
-
   /**
-    * 处理登录请求
-    */
+   * 处理登录请求
+   */
   async handleLogin(client: Client, data: any) {
     const { address } = data;
     if (!address) {
@@ -148,16 +147,12 @@ export class TavernRoom extends Room<TavernState> {
     }
   }
 
-
   /**
    * 处理发布故事请求
    */
   async handlePublishStory(client: Client, data: any) {
-    const address = this.state.players.get(client.sessionId)?.address;
-    if (!address) {
-      client.send("error", { message: "User not authenticated." });
-      return;
-    }
+    const address = this.authenticate(client);  // 调用认证函数
+    if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
 
     const { storyText } = data;
 
@@ -173,11 +168,9 @@ export class TavernRoom extends Room<TavernState> {
    * 处理删除故事请求
    */
   async handleDeleteStory(client: Client, data: any) {
-    const address = this.state.players.get(client.sessionId)?.address;
-    if (!address) {
-      client.send("error", { message: "User not authenticated." });
-      return;
-    }
+    const address = this.authenticate(client);  // 调用认证函数
+    if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
+
     const { storyId } = data;
     try {
       await StoryService.deleteStory(address, storyId);
@@ -191,11 +184,9 @@ export class TavernRoom extends Room<TavernState> {
    * 处理获取故事列表请求
    */
   async handleGetAllStory(client: Client) {
-    const address = this.state.players.get(client.sessionId)?.address;
-    if (!address) {
-      client.send("error", { message: "User not authenticated." });
-      return;
-    }
+    const address = this.authenticate(client);  // 调用认证函数
+    if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
+
     try {
       const stories = await StoryService.getAllStory(address);
       client.send("getAllStoryResponse", { success: true, stories });
@@ -209,11 +200,9 @@ export class TavernRoom extends Room<TavernState> {
    * 处理领取故事请求
    */
   async handleFetchStories(client: Client) {
-    const address = this.state.players.get(client.sessionId)?.address;
-    if (!address) {
-      client.send("error", { message: "User not authenticated." });
-      return;
-    }
+    const address = this.authenticate(client);  // 调用认证函数
+    if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
+
     try {
       const story = await StoryService.fetchRandomStory(address);
       client.send("fetchStoriesResult", { success: true, story });
@@ -226,12 +215,9 @@ export class TavernRoom extends Room<TavernState> {
    * 处理赠送威士忌请求
    */
   async handleSendWhiskey(client: Client, storyId: string) {
-    //console.log("id: " + storyId);
-    const fromAddress = this.state.players.get(client.sessionId)?.address;
-    if (!fromAddress) {
-      client.send("error", { message: "User not authenticated." });
-      return;
-    }
+    const fromAddress = this.authenticate(client);  // 调用认证函数
+    if (!fromAddress) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
+
     try {
       await StoryService.sendWhiskey(fromAddress, storyId);
       client.send("whiskeySent", { success: true });
@@ -244,11 +230,9 @@ export class TavernRoom extends Room<TavernState> {
    * 处理读取积分请求
    */
   async handleGetWhiskeyPoints(client: Client) {
-    const address = this.state.players.get(client.sessionId)?.address;
-    if (!address) {
-      client.send("error", { message: "User not authenticated." });
-      return;
-    }
+    const address = this.authenticate(client);  // 调用认证函数
+    if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
+
     try {
       const points = UserService.getWhiskeyPoints(address);
       client.send("getWhiskeyPointsResponse", { success: true, points });
@@ -261,116 +245,96 @@ export class TavernRoom extends Room<TavernState> {
    * 处理更新积分请求
    */
   async handleUpdateWhiskeyPoints(client: Client, newPoints: number) {
-    const address = this.state.players.get(client.sessionId)?.address;
-    if (!address) {
-      client.send("error", { message: "User not authenticated." });
-      return;
-    }
+    const address = this.authenticate(client);  // 调用认证函数
+    if (!address) return;
     try {
-      const user = UserService.updateWhiskeyPoints(address, newPoints);
-      client.send("updateWhiskeyPointsResponse", { success: true, user });
+      await UserService.updateWhiskeyPoints(address, newPoints);
+      client.send("updateWhiskeyPointsResponse", { success: true, newPoints });
     } catch (error: any) {
       client.send("updateWhiskeyPointsResponse", { success: false, reason: error.message });
     }
   }
 
   /**
-    * 处理回复故事请求
-    */
+   * 处理回复故事请求
+   */
   async handleReplyStory(client: Client, data: any) {
-    const address = this.state.players.get(client.sessionId)?.address;
-    if (!address) {
-      client.send("error", { message: "User not authenticated." });
-      return;
-    }
+    const address = this.authenticate(client);  // 调用认证函数
+    if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
 
-    const { storyId, content } = data;
+    const { storyId, replyText } = data;
 
     try {
-      const reply = await ReplyService.replyStory(address, storyId, content);
+      const reply = await ReplyService.replyStory(address, storyId, replyText);
       client.send("replyStoryResponse", { success: true, reply });
-
-      // 广播新回复给在线的用户
-      this.broadcast("newReply", { success: true, reply });
     } catch (error: any) {
       client.send("replyStoryResponse", { success: false, reason: error.message });
     }
   }
 
   /**
-    * 处理回复请求
-    */
+   * 处理回复用户请求
+   */
   async handleReply(client: Client, data: any) {
-    const from_address = this.state.players.get(client.sessionId)?.address;
-    if (!from_address) {
-      client.send("error", { message: "User not authenticated." });
-      return;
-    }
+    const address = this.authenticate(client);  // 调用认证函数
+    if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
 
-    const { to_address, content } = data;
+    const { targetUserAddress, replyText } = data;
 
     try {
-      const reply = await ReplyService.replyBack(from_address, content, to_address);
-      client.send("replyResponse", { success: true, reply });
-
-      // 广播新回复给在线的用户
-      this.broadcast("newReply", { success: true, reply });
+      const reply = await ReplyService.replyBack(address, targetUserAddress, replyText);
+      client.send("replyUserResponse", { success: true, reply });
     } catch (error: any) {
-      client.send("replyResponse", { success: false, reason: error.message });
+      client.send("replyUserResponse", { success: false, reason: error.message });
     }
   }
 
   /**
-    * 处理获取新回复请求
-    */
+   * 获取新的回复
+   */
   async handleGetNewReply(client: Client) {
-    const address = this.state.players.get(client.sessionId)?.address;
-    if (!address) {
-      client.send("error", { message: "User not authenticated." });
-      return;
-    }
+    const address = this.authenticate(client);  // 调用认证函数
+    if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
+
     try {
-      const replies = await ReplyService.getNewReply(address);
-      //console.log(replies);
-      client.send("getNewReplyResponse", { success: true, replies });
+      const newReplies = await ReplyService.getNewReply(address);
+      client.send("newRepliesResponse", { success: true, newReplies });
     } catch (error: any) {
-      client.send("getNewReplyResponse", { success: false, reason: error.message });
+      client.send("newRepliesResponse", { success: false, reason: error.message });
     }
   }
 
-  /***
-   * 处理标记已读请求
+  /**
+   * 标记回复为已读
    */
-  async handleMarkRepliesRead(client: Client, replies: string[]) {
-    const address = this.state.players.get(client.sessionId)?.address;
-    if (!address) {
-      client.send("error", { message: "User not authenticated." });
-      return;
-    }
+  async handleMarkRepliesRead(client: Client, data: any) {
+    const address = this.authenticate(client);  // 调用认证函数
+    if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
+
+    const { replyIds } = data;
+
     try {
-      await ReplyService.markReplyRead(replies);
+      await ReplyService.markReplyRead(replyIds);
       client.send("markRepliesReadResponse", { success: true });
     } catch (error: any) {
       client.send("markRepliesReadResponse", { success: false, reason: error.message });
     }
   }
 
-  /***
-   * 处理标记未读请求
+  /**
+   * 标记回复为未读
    */
-  async handleMarkRepliesUnread(client: Client, replies: string[]) {
-    const address = this.state.players.get(client.sessionId)?.address;
-    if (!address) {
-      client.send("error", { message: "User not authenticated." });
-      return;
-    }
+  async handleMarkRepliesUnread(client: Client, data: any) {
+    const address = this.authenticate(client);  // 调用认证函数
+    if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
+
+    const { replyIds } = data;
+
     try {
-      await ReplyService.markReplyUnread(replies);
+      await ReplyService.markReplyUnread(replyIds);
       client.send("markRepliesUnreadResponse", { success: true });
     } catch (error: any) {
       client.send("markRepliesUnreadResponse", { success: false, reason: error.message });
     }
   }
 }
-
-
