@@ -1,0 +1,7 @@
+{
+  "production": {
+    "applicationId": "756-tavernserver",
+    "token": "Njc4YmJiMDhlNmRlYzFtV3FqUFA2dmJKeWlJMXBLbzBGNktCcXRDUzd2VVdp",
+    "remote": "https://github.com/Donnykk/TavernServer.git"
+  }
+}
