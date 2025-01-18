@@ -11,7 +11,7 @@
     import { Client } from "colyseus.js";
 
     const client = new Client("ws://localhost:2567"); 
-    const userAddress = '0xCA67f533ACEeBd68946cDcfF047121eeE124EACA';
+    const userAddress = ''; 
     const room = await client.joinOrCreate("tavern_room", { address: userAddress }); 
    ```
 
