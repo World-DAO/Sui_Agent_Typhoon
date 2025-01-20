@@ -6,5 +6,5 @@ CREATE TABLE Story (
     story_content LONGTEXT NOT NULL,
     create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX (author_address),
-    INDEX (created_at)
+    INDEX (create_time)
 );

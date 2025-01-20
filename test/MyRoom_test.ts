@@ -19,7 +19,7 @@ describe("testing your Colyseus app", () => {
 
   it("should perform login and fetch unread replies", async function () {
     // 初始化 Colyseus 客户端
-    const serverUrl = "ws://localhost:2567";
+    const serverUrl = "ws://47.236.128.7:2567";
     const client = new Client(serverUrl);
 
     const testPrivateKey = '8474d4c25d6a68f49ab51fe6061a01bbffd3d113cf1c25beeefc2a6ef74bc86d';
