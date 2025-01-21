@@ -40,6 +40,8 @@ export class TavernRoom extends Room<TavernState> {
     this.onMessage("getNewReply", this.handleGetNewReply.bind(this));
     this.onMessage("markRepliesRead", this.handleMarkRepliesRead.bind(this));
     this.onMessage("markRepliesUnread", this.handleMarkRepliesUnread.bind(this));
+    this.onMessage("getLikedStories", this.handleGetLikedStories.bind(this));
+    this.onMessage("markLikedStory", this.handleMarkLikedStory.bind(this));
   }
 
   onJoin(client: Client, options: any) {
@@ -154,10 +156,10 @@ export class TavernRoom extends Room<TavernState> {
     const address = this.authenticate(client);  // 调用认证函数
     if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
 
-    const { storyText } = data;
+    const { title, storyText } = data;
 
     try {
-      const story = await StoryService.publishUserStory(address, storyText);
+      const story = await StoryService.publishUserStory(address, title, storyText);
       client.send("storyPublishedResponse", { success: true, story });
     } catch (error: any) {
       client.send("storyPublishedResponse", { success: false, reason: error.message });
@@ -335,6 +337,32 @@ export class TavernRoom extends Room<TavernState> {
       client.send("markRepliesUnreadResponse", { success: true });
     } catch (error: any) {
       client.send("markRepliesUnreadResponse", { success: false, reason: error.message });
+    }
+  }
+
+
+  /***
+   * 获取收藏故事列表
+   */
+  async handleGetLikedStories(client: Client) {
+    const address = this.authenticate(client);  // 调用认证函数
+    if (!address) return;
+    try {
+      const likedStories = await UserService.getLikedStories(address);
+      client.send("getLikedStoriesResponse", { success: true, likedStories });
+    } catch (error: any) {
+      client.send("getLikedStoriesResponse", { success: false, reason: error.message });
+    }
+  }
+
+  async handleMarkLikedStory(client: Client, storyId: string) {
+    const address = this.authenticate(client);  // 调用认证函数
+    if (!address) return;
+    try {
+      await StoryService.markLikedStory(address, storyId);
+      client.send("markLikedStoryResponse", { success: true });
+    } catch (error: any) {
+      client.send("markLikedStoryResponse", { success: false, reason: error.message });
     }
   }
 }

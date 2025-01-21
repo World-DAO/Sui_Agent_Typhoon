@@ -2,6 +2,7 @@
 import { addUserReceivedStory, addUserSentWhiskey, getUserState } from '../database/stateDB';
 import { publishStory, getRandomStory, getStoryByAuthor, Story, addWhiskeyPoints, getStoryById, reply, getReplyByToAddress, Reply, getNewReplyByToAddress, markReplyRead, markReplyUnread, deleteStory } from '../database/storyDB';
 import { getUserPoints, updateUserPoints } from '../database/userDB';
+import { STORY_LIMITS } from "../constants";
 
 export class StoryService {
     /**
@@ -10,17 +11,17 @@ export class StoryService {
      * @param content 故事内容
      * @returns 发布的故事实例
      */
-    static async publishUserStory(authorAddress: string, content: string): Promise<Story> {
+    static async publishUserStory(authorAddress: string, title: string, content: string): Promise<Story> {
         // Story 长度验证
-        if (content.length < 50) {
+        if (content.length < STORY_LIMITS.MIN_WORD) {
             throw new Error("Story content to short!");
         }
         // 每日数量限制验证
         let userState = await getUserState(authorAddress);
-        if (userState.published_num >= 1) {
+        if (userState.published_num >= STORY_LIMITS.MAX_PUBLISH) {
             throw new Error("Reach daily publish story limit!");
         }
-        const story = await publishStory(authorAddress, content);
+        const story = await publishStory(authorAddress, title, content);
         return story;
     }
 
@@ -54,7 +55,7 @@ export class StoryService {
     static async fetchRandomStory(address: string): Promise<Story> {
         // 每日数量限制验证
         let userState = getUserState(address);
-        if ((await userState).received_num >= 300) {
+        if ((await userState).received_num >= STORY_LIMITS.MAX_FETCH) {
             throw new Error("Reach daily recieve story limit!");
         }
         const story = await getRandomStory();
@@ -83,10 +84,9 @@ export class StoryService {
         let toAddress = story.author_address;
         // 每日数量限制
         let userState = getUserState(fromAddress);
-        if ((await userState).sent_whiskey_num >= 30) {
+        if ((await userState).sent_whiskey_num >= STORY_LIMITS.MAX_WHISKEY) {
             throw new Error("Reach daily sent whiskey limit!");
         }
-
 
         // 更新账户与故事积分数据
         let fromAddressPoints = await getUserPoints(fromAddress);
@@ -104,4 +104,7 @@ export class StoryService {
         await addWhiskeyPoints(storyId);
     }
 
+    static async markLikedStory(address: string, storyId: string) {
+        await StoryService.markLikedStory(address, storyId);
+    }
 }

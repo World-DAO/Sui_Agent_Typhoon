@@ -76,6 +76,7 @@
         `publishStory`
         ```json
         {
+            "title": "string",
             "storyText": "string" 
         }
         ```
@@ -92,7 +93,7 @@
 
         Example:
         ```typescript
-        client.send("publishStory", { storyText: "哈哈哈哈哈哈..." });
+        client.send("publishStory", { title:"Test", storyText: "哈哈哈哈哈哈..." });
         client.onMessage("storyPublishedResponse", (data) => {
             if (data.success) {
                 console.log("故事发布成功:", data.story);

@@ -54,4 +54,12 @@ export class UserService {
     static async updateWhiskeyPoints(address: string, newPoints: number): Promise<User | null> {
         return updateUserPoints(address, newPoints);
     }
+
+    static async getLikedStories(address: string) {
+        const user = getUserByAddress(address);
+        if (!user) {
+            throw new Error("User not found.");
+        }
+        return (await user).likedStories;
+    }
 }

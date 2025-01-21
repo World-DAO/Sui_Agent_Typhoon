@@ -1,8 +1,10 @@
+import { title } from 'process';
 import { query } from './index';
 
 export interface Story {
     id: number;
     author_address: string;
+    title: string;
     story_content: string;
     created_at: Date;
 }
@@ -16,10 +18,10 @@ export interface Reply {
     created_at: Date;
 }
 
-export async function publishStory(authorAddress: string, content: string): Promise<Story> {
+export async function publishStory(authorAddress: string, title: string, content: string): Promise<Story> {
     await query(
-        'INSERT INTO Story (author_address, story_content, whiskey_points, created_at) VALUES (?, ?, 0, NOW())',
-        [authorAddress, content]
+        'INSERT INTO Story (author_address, title, story_content, whiskey_points, created_at) VALUES (?, ?, ?, 0, NOW())',
+        [authorAddress, title, content]
     );
     const rows = await query(
         'SELECT * FROM Story WHERE author_address = ? ORDER BY id DESC LIMIT 1',
@@ -41,7 +43,7 @@ export async function deleteStory(storyId: string): Promise<boolean> {
 
 export async function getRandomStory(): Promise<Story> {
     const rows = await query(
-        `SELECT id, author_address, story_content, whiskey_points, created_at FROM Story ORDER BY RAND() LIMIT 1`,
+        `SELECT id, author_address, title, story_content, whiskey_points, created_at FROM Story ORDER BY RAND() LIMIT 1`,
     );
     return rows[0];
 }

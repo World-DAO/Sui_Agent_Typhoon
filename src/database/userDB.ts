@@ -3,6 +3,7 @@ import { query } from './index';
 export interface User {
     address: string;
     total_whiskey_points: number;
+    likedStories: JSON;
     created_at: Date;
     updated_at: Date;
 }
@@ -13,7 +14,8 @@ export async function getUserByAddress(address: string): Promise<User | null> {
 }
 
 export async function createUser(address: string): Promise<User> {
-    await query('INSERT INTO User (address, total_points, created_at, updated_at) VALUES (?,0,NOW(),NOW())', [address]);
+    const j = {};
+    await query('INSERT INTO User (address, total_points, likedStories, created_at, updated_at) VALUES (?,0,?,NOW(),NOW())', [address, j]);
     const user = await getUserByAddress(address);
     return user!;
 }
@@ -30,4 +32,20 @@ export async function getUserPoints(address: string): Promise<number> {
 export async function updateUserPoints(address: string, newPoints: number): Promise<User | null> {
     await query('UPDATE User SET total_points = ?, updated_at = NOW() WHERE address = ?', [newPoints, address]);
     return await getUserByAddress(address);
+}
+
+export async function markLikedStory(address: string, storyId: string): Promise<User | null> {
+    const result = await query('SELECT likedStories FROM User WHERE address = ?', [address]);
+    if (result.length === 0) {
+        throw new Error("User not found.");
+    }
+    const likedStories = result[0].likedStories ? JSON.parse(result[0].likedStories) : [];
+    // 检查故事是否已经被收藏
+    if (likedStories.includes(storyId)) {
+        throw new Error("Story already liked.");
+    }
+    likedStories.push(storyId);
+    await query('UPDATE User SET likedStoires= ? WHERE address = ?', [JSON.stringify(likedStories), address]);
+    const updatedUser = await query('SELECT * FROM User WHERE address = ?', [address]);
+    return updatedUser.length > 0 ? updatedUser[0] as User : null;
 }
