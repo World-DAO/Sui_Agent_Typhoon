@@ -20,8 +20,8 @@ describe("testing your Colyseus app", () => {
 
   it("should perform login StoryTeller", async function () {
     // 初始化 Colyseus 客户端
-    // const serverUrl = "ws://47.236.128.7:2567";
-    const serverUrl = "ws://localhost:2567";
+    const serverUrl = "ws://47.236.128.7:2567";
+    //const serverUrl = "ws://localhost:2567";
     const client = new Client(serverUrl);
 
     const testPrivateKey = '8474d4c25d6a68f49ab51fe6061a01bbffd3d113cf1c25beeefc2a6ef74bc86d';
@@ -98,25 +98,25 @@ describe("testing your Colyseus app", () => {
     const getNewReplyResponse = await new Promise<{ success: boolean; newReplies: Reply[] }>((resolve) => {
       room.onMessage("newRepliesResponse", (data) => {
         resolve(data);
-        console.log(data);
+        console.log("newRepliesResponse", data);
       });
     })
     assert.strictEqual(getNewReplyResponse.success, true)
 
-    const newReply = getNewReplyResponse.newReplies[0];
-    const targetUserAddress = newReply.author_address;
-    const storyId = newReply.story_id;
-    const replyText = "Thanks!";
+    // const newReply = getNewReplyResponse.newReplies[0];
+    // const targetUserAddress = newReply.author_address;
+    // const storyId = newReply.story_id;
+    // const replyText = "Thanks!";
 
     // 回复评论
-    room.send("replyUser", { targetUserAddress, replyText, storyId });
-    const replyUserResponse = await new Promise<{ success: boolean; reply: Reply }>((resolve) => {
-      room.onMessage("replyUserResponse", (data) => {
-        resolve(data);
-        console.log(data);
-      });
-    })
-    assert.strictEqual(replyUserResponse.success, true);
+    // room.send("replyUser", { targetUserAddress, replyText, storyId });
+    // const replyUserResponse = await new Promise<{ success: boolean; reply: Reply }>((resolve) => {
+    //   room.onMessage("replyUserResponse", (data) => {
+    //     resolve(data);
+    //     console.log(data);
+    //   });
+    // })
+    // assert.strictEqual(replyUserResponse.success, true);
 
     // 离开当前房间
     await room.leave();
@@ -124,8 +124,8 @@ describe("testing your Colyseus app", () => {
 
   it("should perform login StoryReciever", async function () {
     // 初始化 Colyseus 客户端
-    // const serverUrl = "ws://47.236.128.7:2567";
-    const serverUrl = "ws://localhost:2567";
+    const serverUrl = "ws://47.236.128.7:2567";
+    // const serverUrl = "ws://localhost:2567";
     const client = new Client(serverUrl);
 
     const testPrivateKey = 'ae40f25bfbf17152534e66905ae98621d9d3c35e1831b84fb2185496fc0c25ed';

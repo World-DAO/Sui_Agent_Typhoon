@@ -4,7 +4,8 @@ CREATE TABLE Story (
     author_address VARCHAR(50) NOT NULL,
     title VARCHAR(255),
     story_content LONGTEXT NOT NULL,
-    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    whiskey_points INT DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX (author_address),
-    INDEX (create_time)
+    INDEX (created_at)
 );
