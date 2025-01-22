@@ -39,13 +39,16 @@ export async function markLikedStory(address: string, storyId: string): Promise<
     if (result.length === 0) {
         throw new Error("User not found.");
     }
-    const likedStories = result[0].likedStories ? JSON.parse(result[0].likedStories) : [];
+    const rawLikedStories = result[0].likedStories;
+    const likedStories = typeof rawLikedStories === "string" ? JSON.parse(rawLikedStories) : rawLikedStories || [];
+
     // 检查故事是否已经被收藏
-    if (likedStories.includes(storyId)) {
+    if (!likedStories.includes(storyId)) {
+        likedStories.push(storyId);
+    } else {
         throw new Error("Story already liked.");
     }
-    likedStories.push(storyId);
-    await query('UPDATE User SET likedStoires= ? WHERE address = ?', [JSON.stringify(likedStories), address]);
+    await query('UPDATE User SET likedStories= ? WHERE address = ?', [JSON.stringify(likedStories), address]);
     const updatedUser = await query('SELECT * FROM User WHERE address = ?', [address]);
     return updatedUser.length > 0 ? updatedUser[0] as User : null;
 }

@@ -140,10 +140,14 @@ export class TavernRoom extends Room<TavernState> {
       }
       // 签名验证通过，生成 JWT
       const token = generateJWT({ address });
+      client.auth = { jwt: token };
       // 发送 JWT 给前端
       client.send("loginResponse", { success: true, token });
       // 清除已使用的挑战消息
       this.state.loginChallenges.delete(client.sessionId);
+      // 读取用户信息
+      const user = await UserService.getUser(address);
+      const userState = await UserService.getDailyState(address);
     } catch (error: any) {
       client.send("loginResponse", { success: false, reason: error.message });
     }
@@ -265,6 +269,8 @@ export class TavernRoom extends Room<TavernState> {
     if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
 
     const { storyId, replyText } = data;
+    console.log(storyId);
+    console.log(replyText);
 
     try {
       const reply = await ReplyService.replyStory(address, storyId, replyText);
@@ -281,10 +287,10 @@ export class TavernRoom extends Room<TavernState> {
     const address = this.authenticate(client);  // 调用认证函数
     if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
 
-    const { targetUserAddress, replyText } = data;
+    const { targetUserAddress, replyText, storyId } = data;
 
     try {
-      const reply = await ReplyService.replyBack(address, targetUserAddress, replyText);
+      const reply = await ReplyService.replyBack(address, storyId, replyText, targetUserAddress);
       client.send("replyUserResponse", { success: true, reply });
     } catch (error: any) {
       client.send("replyUserResponse", { success: false, reason: error.message });
@@ -355,6 +361,9 @@ export class TavernRoom extends Room<TavernState> {
     }
   }
 
+  /***
+   * 处理收藏请求
+   */
   async handleMarkLikedStory(client: Client, storyId: string) {
     const address = this.authenticate(client);  // 调用认证函数
     if (!address) return;

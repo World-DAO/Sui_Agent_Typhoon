@@ -60,11 +60,11 @@ export class ReplyService {
     /**
      * 发布回复
      */
-    static async replyBack(fromAddress: string, content: string, toAddress: string) {
+    static async replyBack(fromAddress: string, storyId: string, content: string, toAddress: string) {
         if (content.length === 0) {
             throw new Error("Reply content cannot be empty.");
         }
-        const _reply = await reply(fromAddress, null, content, toAddress);
+        const _reply = await reply(fromAddress, storyId, content, toAddress);
         if (_reply == null) {
             throw new Error("Reply failed!");
         }

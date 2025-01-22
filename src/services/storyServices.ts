@@ -1,7 +1,7 @@
 // src/services/storyService.ts
-import { addUserReceivedStory, addUserSentWhiskey, getUserState } from '../database/stateDB';
+import { addUserPublishedStory, addUserReceivedStory, addUserSentWhiskey, getUserState } from '../database/stateDB';
 import { publishStory, getRandomStory, getStoryByAuthor, Story, addWhiskeyPoints, getStoryById, reply, getReplyByToAddress, Reply, getNewReplyByToAddress, markReplyRead, markReplyUnread, deleteStory } from '../database/storyDB';
-import { getUserPoints, updateUserPoints } from '../database/userDB';
+import { getUserPoints, markLikedStory, updateUserPoints } from '../database/userDB';
 import { STORY_LIMITS } from "../constants";
 
 export class StoryService {
@@ -22,6 +22,7 @@ export class StoryService {
             throw new Error("Reach daily publish story limit!");
         }
         const story = await publishStory(authorAddress, title, content);
+        await addUserPublishedStory(authorAddress);
         return story;
     }
 
@@ -105,6 +106,6 @@ export class StoryService {
     }
 
     static async markLikedStory(address: string, storyId: string) {
-        await StoryService.markLikedStory(address, storyId);
+        await markLikedStory(address, storyId);
     }
 }
