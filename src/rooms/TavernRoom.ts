@@ -138,6 +138,9 @@ export class TavernRoom extends Room<TavernState> {
       if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
         throw new Error("Signature verification failed.");
       }
+      // 读取用户信息
+      const user = await UserService.getUser(address);
+      const userState = await UserService.getDailyState(address);
       // 签名验证通过，生成 JWT
       const token = generateJWT({ address });
       client.auth = { jwt: token };
@@ -145,9 +148,7 @@ export class TavernRoom extends Room<TavernState> {
       client.send("loginResponse", { success: true, token });
       // 清除已使用的挑战消息
       this.state.loginChallenges.delete(client.sessionId);
-      // 读取用户信息
-      const user = await UserService.getUser(address);
-      const userState = await UserService.getDailyState(address);
+
     } catch (error: any) {
       client.send("loginResponse", { success: false, reason: error.message });
     }
