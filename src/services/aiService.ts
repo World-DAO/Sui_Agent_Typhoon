@@ -8,7 +8,7 @@ export class aiService {
             const history = await getChatHistory(userId, prevCnt);
             return { success: true, data: history };
         } catch (error) {
-            return { success: false, error };
+            return { success: false, error: error };
         }
     }
 
@@ -17,7 +17,7 @@ export class aiService {
             await saveChatMessage(userId, role, content);
             return { success: true };
         } catch (error) {
-            return { success: false, error };
+            return { success: false, error: error };
         }
     }
 
@@ -26,7 +26,7 @@ export class aiService {
             const stories = await getStoryByAuthor(authorAddress);
             return { success: true, data: stories };
         } catch (error) {
-            return { success: false, error };
+            return { success: false, error: error };
         }
     }
 
@@ -47,7 +47,7 @@ export class aiService {
             );
             return { success: true, data: stories };
         } catch (error) {
-            return { success: false, error };
+            return { success: false, error: error };
         }
     }
 }
