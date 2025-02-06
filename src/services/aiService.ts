@@ -1,5 +1,5 @@
 import { getChatHistory, saveChatMessage } from "../database/chatDB";
-import { getStoryByAuthor } from "../database/storyDB";
+import { getStoryByAuthor, getStoryById } from "../database/storyDB";
 import { getUserByAddress } from "../database/userDB";
 
 export class aiService {
@@ -36,7 +36,16 @@ export class aiService {
             if (!user) {
                 throw new Error("User not found.");
             }
-            return { success: true, data: (await user).likedStories };
+            const likedStories = (await user).likedStories;
+            if (!Array.isArray(likedStories)) {
+                throw new Error("Invalid likedStories format.");
+            }
+            const stories = await Promise.all(
+                likedStories.map(async (item: { story_id: string }) => {
+                    return await getStoryById(item.story_id);
+                })
+            );
+            return { success: true, data: stories };
         } catch (error) {
             return { success: false, error };
         }
