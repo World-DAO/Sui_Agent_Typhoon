@@ -43,15 +43,10 @@ export class aiService {
             }
 
             const stories = await Promise.all(
-                likedStories.map(async (item: { story_id?: string }) => {
-                    if (!item.story_id) {
-                        console.warn("⚠️ 跳过无效的 story_id:", item);
-                        return null;
-                    }
-                    return await getStoryById(item.story_id);
+                likedStories.map(async (item) => {
+                    return await getStoryById(item);
                 })
             );
-
             return { success: true, data: stories.filter(story => story !== null) };
         } catch (error) {
             return { success: false, error: error };
