@@ -11,7 +11,7 @@ export async function saveChatMessage(userId: string, role: "user" | "ai", conte
     try {
         const messageHash = generateMessageHash(userId, content);
         await query(
-            "INSERT INTO chatHistory (user_id, role, content, message_hash) VALUES (?, ?, ?, ?)",
+            "INSERT INTO ChatHistory (user_id, role, content, message_hash) VALUES (?, ?, ?, ?)",
             [userId, role, content, messageHash]
         );
     } catch (error) {
@@ -29,7 +29,7 @@ export async function saveChatMessage(userId: string, role: "user" | "ai", conte
 export async function getChatHistory(userId: string, prevCnt: number) {
     try {
         const results = await query(
-            `SELECT user_id, role, content, created_at FROM chatHistory WHERE user_id = ? ORDER BY created_at DESC LIMIT ${prevCnt}`,
+            `SELECT user_id, role, content, created_at FROM ChatHistory WHERE user_id = ? ORDER BY created_at DESC LIMIT ${prevCnt}`,
             [userId]
         );
         return results.reverse();
