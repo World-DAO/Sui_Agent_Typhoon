@@ -42,6 +42,7 @@ export class StoryService {
 
     /**
      * 获取个人全部故事
+     * @param authorAddress 地址
      * @returns 故事列表
      */
     static async getAllStory(address: string): Promise<Story[]> {
@@ -63,16 +64,6 @@ export class StoryService {
         // 更新状态
         await addUserReceivedStory(address);
         return story;
-    }
-
-    /**
-     * 获取作者的所有故事
-     * @param authorAddress 地址
-     * @returns 故事数组
-     */
-    static async getStoryByAuthor(authorAddress: string): Promise<Story[]> {
-        const stories = await getStoryByAuthor(authorAddress);
-        return stories;
     }
 
     /**
