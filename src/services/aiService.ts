@@ -32,20 +32,27 @@ export class aiService {
 
     static async getLikedStories(address: string) {
         try {
-            const user = getUserByAddress(address);
+            const user = await getUserByAddress(address);
             if (!user) {
                 throw new Error("User not found.");
             }
-            const likedStories = (await user).likedStories;
+
+            const likedStories = user.likedStories;
             if (!Array.isArray(likedStories)) {
                 throw new Error("Invalid likedStories format.");
             }
+
             const stories = await Promise.all(
-                likedStories.map(async (item: { story_id: string }) => {
+                likedStories.map(async (item: { story_id?: string }) => {
+                    if (!item.story_id) {
+                        console.warn("⚠️ 跳过无效的 story_id:", item);
+                        return null;
+                    }
                     return await getStoryById(item.story_id);
                 })
             );
-            return { success: true, data: stories };
+
+            return { success: true, data: stories.filter(story => story !== null) };
         } catch (error) {
             return { success: false, error: error };
         }
