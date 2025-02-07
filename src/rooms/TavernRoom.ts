@@ -4,7 +4,7 @@ import { StoryService } from "../services/storyServices";
 import { UserService } from "../services/userService";
 import { ReplyService } from "../services/replyService";
 import { ethers } from "ethers";
-import { generateJWT, verifyJWT, recoverAddress, verifySuiSignature } from "../utils/jwtUtils";
+import { generateJWT, verifyJWT, verifySuiSignature } from "../utils/jwtUtils";
 
 class Player extends Schema {
   @type("string")
@@ -117,7 +117,7 @@ export class TavernRoom extends Room<TavernState> {
     * 处理用户签名验证请求，生成 JWT
     */
   async handleLoginSignature(client: Client, data: any) {
-    const { signature, publicKey } = data;
+    const { signature } = data;
     const challenge = this.state.loginChallenges.get(client.sessionId);
 
     if (!challenge) {
@@ -140,7 +140,9 @@ export class TavernRoom extends Room<TavernState> {
       // }
 
       // sui 验证签名
-      if (await verifySuiSignature(challenge, signature, publicKey) === false) {
+      console.log("challenge:", challenge);
+      console.log("signature:", signature);
+      if (await verifySuiSignature(challenge, signature) === false) {
         throw new Error("Signature verification failed.");
       }
 
