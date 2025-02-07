@@ -1,7 +1,7 @@
 CREATE TABLE StoryReply (
     id INT AUTO_INCREMENT PRIMARY KEY,
     story_id INT NOT NULL,
-    author_address VARCHAR(50) NOT NULL,
+    author_address VARCHAR(255) NOT NULL,
     reply_content LONGTEXT,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     to_address VARCHAR(255) NOT NULL,

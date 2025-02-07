@@ -1,5 +1,5 @@
 CREATE TABLE UserState (
-    address VARCHAR(50) NOT NULL,
+    address VARCHAR(255) NOT NULL,
     date DATE NOT NULL,
     published_num INTEGER NOT NULL DEFAULT 0,
     received_num INTEGER NOT NULL DEFAULT 0,

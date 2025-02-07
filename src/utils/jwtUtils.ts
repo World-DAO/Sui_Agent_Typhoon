@@ -35,7 +35,7 @@ export function verifyJWT(token: string): MyJwtPayload | null {
 /**
  * 以太坊风格的签名恢复（仅适用于 EVM）
  */
-export function recoverAddress(message: string, signature: string): string | null {
+export function recoverETHAddress(message: string, signature: string): string | null {
     try {
         return ethers.verifyMessage(message, signature);
     } catch (error) {

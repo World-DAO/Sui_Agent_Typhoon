@@ -171,6 +171,8 @@ export class TavernRoom extends Room<TavernState> {
     if (!address) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
 
     const { title, storyText } = data;
+    console.log("title:", title);
+    console.log("storyText:", storyText);
 
     try {
       const story = await StoryService.publishUserStory(address, title, storyText);
