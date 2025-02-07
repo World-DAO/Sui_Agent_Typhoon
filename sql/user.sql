@@ -1,5 +1,5 @@
 CREATE TABLE User (
-    address VARCHAR(50) PRIMARY KEY,
+    address VARCHAR(255) PRIMARY KEY,
     total_points INT NOT NULL DEFAULT 0,
     intimacy INT NOT NULL DEFAULT 0,
     likedStories JSON,
