@@ -1,0 +1,20 @@
+{
+    "driftbottles": [
+      {
+        "title": "My First Bottle",
+        "body": "Why do we use it?\nIt is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. etc.",
+        "author": "mario",
+        "time": "2024-09-01 12:00:00",
+        "id": "1"
+      },
+      {
+        "title": "Opening Party!",
+        "body": "Why do we use it?\nIt is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. ",
+        "author": "luigi",
+        "time": "2024-10-01 12:00:00",
+        "id": "2"
+      }
+    ]
+  }
+
+
