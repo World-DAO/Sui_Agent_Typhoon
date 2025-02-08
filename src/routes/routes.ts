@@ -23,6 +23,57 @@ router.get("/chat_history", async (req, res) => {
     }
 });
 
+/**
+ * 写入用户和 AI 的聊天记录
+ */
+router.post("/store_chat_history", async (req, res) => {
+    const { user_id, role, content } = req.body;
+    // 参数校验
+    if (!user_id || !role || !content) {
+        return res.status(400).json({ error: "user_id, role, and content are required" });
+    }
+
+    if (!["user", "ai"].includes(role)) {
+        return res.status(400).json({ error: "Invalid role. Must be 'user' or 'ai'." });
+    }
+
+    try {
+        const result = await aiService.saveChatHistory(user_id, role, content);
+        res.status(201).json({ success: true, message: "Chat record saved successfully", data: result });
+    } catch (error) {
+        console.error("❌ Failed to save chat history:", error);
+        res.status(500).json({ error: "Failed to save chat history" });
+    }
+});
+
+router.get("/get_intimacy", async (req, res) => {
+    const { user_id } = req.query;
+    if (!user_id) {
+        return res.status(400).json({ error: "user_id are required" });
+    }
+    try {
+        const intimacy = await UserService.getIntimacy(user_id as string);
+        res.json({ success: true, intimacy });
+    } catch (error) {
+        console.error("❌ Failed to fetch intimacy:", error);
+        res.status(500).json({ error: "Failed to fetch intimacy" });
+    }
+});
+
+router.put("/update_intimacy", async (req, res) => {
+    const { user_id, new_intimacy } = req.query;
+    if (!user_id || !new_intimacy) {
+        return res.status(400).json({ error: "user_id and new_intimacy are required" });
+    }
+    try {
+        await UserService.updateIntimacy(user_id as string, Number(new_intimacy));
+        res.json({ success: true });
+    } catch (error) {
+        console.error("❌ Failed to update intimacy:", error);
+        res.status(500).json({ error: "Failed to update intimacy" });
+    }
+})
+
 router.get("/sent_bottle_msg", async (req, res) => {
     const { user_id } = req.query;
     if (!user_id) {
