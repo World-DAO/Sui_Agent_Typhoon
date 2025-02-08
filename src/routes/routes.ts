@@ -47,7 +47,7 @@ router.post("/store_chat_history", async (req, res) => {
 });
 
 router.get("/get_intimacy", async (req, res) => {
-    const { user_id } = req.body;
+    const { user_id } = req.query;
     if (!user_id) {
         return res.status(400).json({ error: "user_id are required" });
     }
