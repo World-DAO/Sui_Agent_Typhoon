@@ -271,7 +271,27 @@
     })
     ```
 
-9.  Get unread replies
+9. Get replies by storyId
+    功能：根据StoryId获取回复历史
+    Request:
+    `GetRepliesByStoryId`
+    ```json
+    {
+        "storyId": "string",
+    }
+    ```
+
+    Response:
+    `getRepliesResponse`
+    ```json
+    {
+        "success": true, 
+        "replies": [ /* 回复对象数组(已按会话分组) */ ],
+    }
+    ```
+
+
+10. Get unread replies
     功能：获取未读回复
     Request: 
     `getNewReply`
@@ -312,7 +332,7 @@
     });
     ```
 
-10. Mark replies as read
+11. Mark replies as read
     功能：将指定的回复标记为已读，避免重复处理
     Request: 
     `markRepliesRead`
@@ -331,7 +351,7 @@
     }
     ```
 
-11. Mark replies as unread
+12. Mark replies as unread
     功能：将指定的回复标记为未读
     Request: 
     `markRepliesUnread`
@@ -350,7 +370,7 @@
     }
     ```
 
-12. Send Whiskey Point
+13. Send Whiskey Point
     功能：赠送一个威士忌积分
     Request: 
     `sendWhiskey`
@@ -369,7 +389,7 @@
     }
     ```
 
-13. Get User Whiskey Point
+14. Get User Whiskey Point
     功能：读取用户威士忌积分
     Request: 
     `getWhiskeyPoints`
@@ -384,8 +404,8 @@
     }
     ```
 
-14. Update User Whiskey Point
-    功能：发布Story
+15. Update User Whiskey Point
+    功能：更新威士忌积分
     Request: 
     `updateWhiskeyPoints`
     ```json
@@ -404,7 +424,43 @@
     }
     ```
 
-15. Mark Story Liked
+16. Get User Intimacy
+    功能：读取用户亲密度
+    Request: 
+    `getIntimacy`
+
+    Response:
+    `getIntimacyResponse`
+    ```json
+    {
+        "success": true, 
+        "intimacy": "number", 
+        "reason": "string" 
+    }
+    ```
+
+
+17. Update User Intimacy
+    功能：更新亲密度
+    Request: 
+    `updateIntimacy`
+    ```json
+    {
+        "newIntimacy": "number" 
+    }
+    ```
+
+    Response:
+    `updateIntimacyResponse`
+    ```json
+    {
+        "success": true, 
+        "user": { /* 用户对象 */ }, // 更新成功时返回用户信息
+        "reason": "string" 
+    }
+    ```
+
+18. Mark Story Liked
     功能：将Story加入收藏（保留）
     Request:
     `markLikedStory`
@@ -434,17 +490,17 @@
     })
     ```
 
-16. Get Liked Stories
-    功能：获取收藏的Story列表
+19. Get Receive Stories
+    功能：获取收到的Story列表
     Request:
-    `getLikedStories`
+    `getRecvStories`
 
     Response:
-    `getLikedStoriesResponse`
+    `getRecvStoriesResponse`
     ```json
     {
         "success": true, 
-        "likedStories":"string[]", //StoryId 列表
+        "recvStories":"Story[]", //Story 列表
         "reason": "string" 
     }
     ```

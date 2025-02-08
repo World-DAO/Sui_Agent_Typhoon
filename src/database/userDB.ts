@@ -52,3 +52,17 @@ export async function markLikedStory(address: string, storyId: string): Promise<
     const updatedUser = await query('SELECT * FROM User WHERE address = ?', [address]);
     return updatedUser.length > 0 ? updatedUser[0] as User : null;
 }
+
+export async function getIntimacy(address: string): Promise<number> {
+    const rows = await query('SELECT intimacy FROM User WHERE address = ?', [address]);
+    const { intimacy } = rows[0];
+    if (typeof intimacy !== 'number') {
+        throw new Error(`Invalid total_points value for user ${address}.`);
+    }
+    return intimacy;
+}
+
+export async function updateIntimacy(address: string, newIntimacy: number): Promise<User | null> {
+    await query('UPDATE User SET intimacy = ?, updated_at = NOW() WHERE address = ?', [newIntimacy, address]);
+    return await getUserByAddress(address);
+}

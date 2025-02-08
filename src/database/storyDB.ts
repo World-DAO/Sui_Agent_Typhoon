@@ -12,8 +12,8 @@ export interface Story {
 export interface Reply {
     id: number;
     story_id: number;
-    parent_reply_id: number;
     author_address: string;
+    to_address: string;
     reply_content: string;
     created_at: Date;
 }

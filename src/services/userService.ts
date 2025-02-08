@@ -1,5 +1,5 @@
 import { getUserState, setUserState, UserState } from "../database/stateDB";
-import { createUser, getUserByAddress, getUserPoints, updateUserPoints, User } from "../database/userDB";
+import { createUser, getIntimacy, getUserByAddress, getUserPoints, updateIntimacy, updateUserPoints, User } from "../database/userDB";
 
 interface UserDailyState {
     published_num: number;
@@ -55,11 +55,26 @@ export class UserService {
         return updateUserPoints(address, newPoints);
     }
 
+    static async getIntimacy(address: string): Promise<number> {
+        return getIntimacy(address);
+    }
+
+    static async updateIntimacy(address: string, newIntimacy: number): Promise<User | null> {
+        return updateIntimacy(address, newIntimacy);
+    }
+
     static async getLikedStories(address: string) {
         const user = getUserByAddress(address);
         if (!user) {
             throw new Error("User not found.");
         }
-        return (await user).likedStories;
+        let likedStories = (await user).likedStories;
+        if (typeof likedStories === "string") {
+            likedStories = JSON.parse(likedStories);
+        }
+        if (!Array.isArray(likedStories)) {
+            throw new Error("Invalid likedStories format.");
+        }
+        return likedStories;
     }
 }

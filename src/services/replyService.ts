@@ -41,6 +41,37 @@ export class ReplyService {
         }
     }
 
+    static async getRepliesForStoryByUser(address: string, storyId: number) {
+        try {
+            // 获取该 StoryId 的所有回复
+            const replies = await getReplyByStoryId(storyId);
+
+            // 过滤掉不符合条件的回复，只保留 `author_address` 或 `to_address` 是 `address` 的记录
+            const filteredReplies = replies.filter(
+                (reply) => reply.author_address === address || reply.to_address === address
+            );
+
+            // 用 Map 结构分组
+            const groupedReplies = new Map<string, Reply[]>();
+
+            for (const reply of filteredReplies) {
+                const key1 = `${reply.author_address}-${reply.to_address}`;
+                const key2 = `${reply.to_address}-${reply.author_address}`;
+                const key = groupedReplies.has(key1) ? key1 : key2;
+
+                if (!groupedReplies.has(key)) {
+                    groupedReplies.set(key, []);
+                }
+                groupedReplies.get(key)!.push(reply);
+            }
+
+            return groupedReplies;
+        } catch (error) {
+            console.error(`❌ 获取 story ${storyId} 的 replies 失败:`, error);
+            throw error;
+        }
+    }
+
     /**
      * 发布Story回复
      */
