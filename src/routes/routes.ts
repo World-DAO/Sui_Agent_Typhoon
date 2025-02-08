@@ -50,7 +50,7 @@ router.get("/recv_bottle_msg", async (req, res) => {
 })
 
 /**
- * @route POST /transactions/create
+ * @route POST /createTxn
  * @desc 创建一笔新的交易
  */
 router.post("/createTxn", async (req, res) => {
@@ -65,7 +65,7 @@ router.post("/createTxn", async (req, res) => {
 });
 
 /**
- * @route GET /transactions/reply/:replyId
+ * @route GET /getTxnByReply/:replyId
  * @desc 根据 replyId 获取绑定的交易信息
  */
 router.get("/getTxnByReply/:replyId", async (req, res) => {
@@ -80,7 +80,7 @@ router.get("/getTxnByReply/:replyId", async (req, res) => {
 });
 
 /**
- * @route PUT /transactions/update
+ * @route PUT /updateTxn
  * @desc 更新交易状态
  */
 router.put("/updateTxn", async (req, res) => {
@@ -95,7 +95,7 @@ router.put("/updateTxn", async (req, res) => {
 });
 
 /**
- * @route POST /transactions/claim
+ * @route POST /claim
  * @desc 领取交易
  */
 router.post("/claim", async (req, res) => {
@@ -110,7 +110,7 @@ router.post("/claim", async (req, res) => {
 });
 
 /**
- * @route POST /transactions/userSession
+ * @route POST /userSession
  * @desc 用户支付并创建会话
  */
 router.post("/userSession", async (req, res) => {
@@ -129,10 +129,10 @@ router.post("/userSession", async (req, res) => {
 });
 
 /**
- * @route POST /transactions/aiReply
- * @desc AI 发送回复并创建 NFT
+ * @route POST /aiCreateNft
+ * @desc AI 创建 NFT
  */
-router.post("/aiReply", async (req, res) => {
+router.post("/aiCreateNft", async (req, res) => {
     const { nftObjectId, userAddress } = req.body;
 
     if (!nftObjectId || !userAddress) {
@@ -148,7 +148,7 @@ router.post("/aiReply", async (req, res) => {
 });
 
 /**
- * @route POST /transactions/claimRewards
+ * @route POST /claimRewards
  * @desc 领取 AI 会话奖励（NFT）
  */
 router.post("/claimRewards", async (req, res) => {
