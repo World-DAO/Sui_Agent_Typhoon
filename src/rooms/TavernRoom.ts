@@ -236,10 +236,10 @@ export class TavernRoom extends Room<TavernState> {
   /**
    * 处理赠送威士忌请求
    */
-  async handleSendWhiskey(client: Client, storyId: string) {
+  async handleSendWhiskey(client: Client, data: any) {
     const fromAddress = this.authenticate(client);  // 调用认证函数
     if (!fromAddress) return;  // 如果认证失败，函数会返回 null 并已经向客户端发送错误
-
+    const { storyId } = data;
     try {
       await StoryService.sendWhiskey(fromAddress, storyId);
       client.send("whiskeySent", { success: true });
