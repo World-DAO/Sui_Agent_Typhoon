@@ -9,10 +9,9 @@ import { query } from './index';
  */
 export async function saveChatMessage(userId: string, role: "user" | "ai", content: string) {
     try {
-        const messageHash = generateMessageHash(userId, content);
         await query(
-            "INSERT INTO ChatHistory (user_id, role, content, message_hash) VALUES (?, ?, ?, ?)",
-            [userId, role, content, messageHash]
+            "INSERT INTO ChatHistory (user_id, role, content, message_hash) VALUES (?, ?, ?)",
+            [userId, role, content]
         );
     } catch (error) {
         console.error("❌ 存储聊天记录失败:", error);
@@ -38,15 +37,3 @@ export async function getChatHistory(userId: string, prevCnt: number) {
         throw error;
     }
 }
-
-/**
- * 生成消息哈希值
- * @param userId - 用户 ID
- * @param content - 聊天内容
- * @returns SHA256 哈希
- */
-import { createHash } from "crypto";
-function generateMessageHash(userId: string, content: string): string {
-    return createHash("sha256").update(userId + content).digest("hex");
-}
-
