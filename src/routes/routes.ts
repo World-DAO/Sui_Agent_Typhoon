@@ -133,14 +133,14 @@ router.post("/userSession", async (req, res) => {
  * @desc AI 发送回复并创建 NFT
  */
 router.post("/aiReply", async (req, res) => {
-    const { nftObjectId, userAddress, content } = req.body;
+    const { nftObjectId, userAddress } = req.body;
 
-    if (!nftObjectId || !userAddress || !content) {
+    if (!nftObjectId || !userAddress) {
         return res.status(400).json({ success: false, message: "Missing required fields" });
     }
 
     try {
-        const response = await TxnService.aiReplyWithNFT(nftObjectId, userAddress, content);
+        const response = await TxnService.aiReplyWithNFT(nftObjectId, userAddress);
         res.json({ success: true, data: response });
     } catch (error: any) {
         res.status(500).json({ success: false, message: error.message });

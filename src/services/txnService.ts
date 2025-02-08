@@ -97,8 +97,8 @@ export class TxnService {
      * @param userAddress 用户地址
      * @param content AI 生成的内容
      */
-    static async aiReplyWithNFT(nftObjectId: string, userAddress: string, content: string) {
-        return await createReplyInSession(nftObjectId, userAddress, content);
+    static async aiReplyWithNFT(nftObjectId: string, userAddress: string) {
+        return await createReplyInSession(nftObjectId, userAddress);
     }
 
     /**

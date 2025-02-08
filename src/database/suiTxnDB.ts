@@ -81,7 +81,7 @@ export async function createUserSession(txnObjectId: string, sessionId: string, 
 /**
  * AI 回复用户，并在会话中创建交易 & NFT
  */
-export async function createReplyInSession(nftObjectId: string, userAddress: string, content: string) {
+export async function createReplyInSession(nftObjectId: string, userAddress: string) {
     // ✅ 确保会话存在 & 处于 `active` 状态
     const session = await query(`SELECT * FROM Session WHERE user_address = ? AND status = 'active'`, [userAddress]);
     if (session.length === 0) {
