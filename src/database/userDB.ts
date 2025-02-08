@@ -8,7 +8,7 @@ export interface User {
     updated_at: Date;
 }
 
-export async function getUserByAddress(address: string): Promise<User | null> {
+export async function getUserByAddress(address: string) {
     const rows = await query('SELECT * FROM User WHERE address = ? LIMIT 1', [address]);
     return rows.length > 0 ? rows[0] : null;
 }

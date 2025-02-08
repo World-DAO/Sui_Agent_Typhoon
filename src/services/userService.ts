@@ -64,17 +64,34 @@ export class UserService {
     }
 
     static async getLikedStories(address: string) {
-        const user = getUserByAddress(address);
+        const user = await getUserByAddress(address);
         if (!user) {
             throw new Error("User not found.");
         }
-        let likedStories = (await user).likedStories ?? "[]";
+
+        let likedStories = user.likedStories;
+
         if (typeof likedStories === "string") {
-            likedStories = JSON.parse(likedStories);
+            try {
+                likedStories = JSON.parse(likedStories);
+            } catch (error) {
+                console.error("❌ JSON 解析失败:", error);
+                throw new Error("Invalid likedStories JSON format.");
+            }
         }
+
+        // 处理 `{}` 为空数组
+        if (typeof likedStories === "object" && likedStories !== null && !Array.isArray(likedStories)) {
+            console.warn("⚠️ likedStories 是 `{}`，转换为空数组");
+            likedStories = [];
+        }
+
+        // **确保 `likedStories` 是数组**
         if (!Array.isArray(likedStories)) {
-            throw new Error("Invalid likedStories format.");
+            console.warn("⚠️ likedStories 不是数组，返回空数组");
+            likedStories = [];
         }
+
         return likedStories;
     }
 }
