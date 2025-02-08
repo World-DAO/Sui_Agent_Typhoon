@@ -14,7 +14,7 @@ import { listen } from "@colyseus/tools";
 import app from "./app.config";
 
 import express from "express";
-import aiRoutes from "./routes/aiRoutes";
+import routes from "./routes/routes";
 import cors from "cors";
 
 const app_ = express();
@@ -22,7 +22,7 @@ app_.use(express.json());
 app_.use(cors());
 
 // ✅ 挂载 API 路由
-app_.use("/api", aiRoutes);
+app_.use("/api", routes);
 
 // ✅ 监听 3000 端口
 const PORT = process.env.PORT || 3000;
