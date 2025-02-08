@@ -9,9 +9,9 @@ export class TxnService {
      * @param amount 转账金额
      * @param tokenType 代币类型（SUI 或其他）
      */
-    static async createNewTransaction(objectId: string, sender: string, receiver: string, amount: number, tokenType: string) {
+    static async createNewTransaction(objectId: string, replyId: string, sender: string, receiver: string, amount: number, tokenType: string) {
         try {
-            await createTransaction(objectId, sender, receiver, amount, tokenType);
+            await createTransaction(objectId, replyId, sender, receiver, amount, tokenType);
             return { success: true, message: "Transaction created successfully" };
         } catch (error) {
             console.error("❌ 创建交易失败:", error);

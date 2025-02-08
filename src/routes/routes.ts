@@ -54,13 +54,13 @@ router.get("/recv_bottle_msg", async (req, res) => {
  * @desc 创建一笔新的交易
  */
 router.post("/createTxn", async (req, res) => {
-    const { objectId, sender, receiver, amount, tokenType } = req.body;
+    const { objectId, replyId, sender, receiver, amount, tokenType } = req.body;
 
-    if (!objectId || !sender || !receiver || !amount || !tokenType) {
+    if (!objectId || !replyId || !sender || !receiver || !amount || !tokenType) {
         return res.status(400).json({ success: false, message: "Missing required fields" });
     }
 
-    const response = await TxnService.createNewTransaction(objectId, sender, receiver, amount, tokenType);
+    const response = await TxnService.createNewTransaction(objectId, replyId, sender, receiver, amount, tokenType);
     res.json(response);
 });
 

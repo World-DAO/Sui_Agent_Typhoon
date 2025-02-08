@@ -1,9 +1,13 @@
 import { query } from "../database/index";
 
-export async function createTransaction(objectId: string, sender: string, receiver: string, amount: number, tokenType: string) {
+export async function createTransaction(objectId: string, replyId: string, sender: string, receiver: string, amount: number, tokenType: string) {
     await query(
         `INSERT INTO SuiTxn (object_id, sender, receiver, amount, token_type, status) VALUES (?, ?, ?, ?, ?, 'pending')`,
         [objectId, sender, receiver, amount, tokenType]
+    );
+    await query(
+        `INSERT INTO transaction_reply_mapping (object_id, reply_id) VALUES (?, ?)`,
+        [objectId, replyId]
     );
 }
 
