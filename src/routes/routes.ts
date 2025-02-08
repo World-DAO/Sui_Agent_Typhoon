@@ -39,7 +39,7 @@ router.post("/store_chat_history", async (req, res) => {
 
     try {
         const result = await aiService.saveChatHistory(user_id, role, content);
-        res.status(201).json({ success: true, message: "Chat record saved successfully", data: result });
+        res.status(201).json({ success: true, data: result });
     } catch (error) {
         console.error("❌ Failed to save chat history:", error);
         res.status(500).json({ error: "Failed to save chat history" });
