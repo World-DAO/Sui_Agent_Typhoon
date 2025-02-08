@@ -266,9 +266,10 @@ export class TavernRoom extends Room<TavernState> {
   /**
    * 处理更新积分请求
    */
-  async handleUpdateWhiskeyPoints(client: Client, newPoints: number) {
+  async handleUpdateWhiskeyPoints(client: Client, data: any) {
     const address = this.authenticate(client);  // 调用认证函数
     if (!address) return;
+    const { newPoints } = data;
     try {
       await UserService.updateWhiskeyPoints(address, newPoints);
       client.send("updateWhiskeyPointsResponse", { success: true, newPoints });
@@ -295,9 +296,10 @@ export class TavernRoom extends Room<TavernState> {
   /**
    * 处理更新亲密度请求
    */
-  async handleUpdateIntimacy(client: Client, newIntimacy: number) {
+  async handleUpdateIntimacy(client: Client, data: any) {
     const address = this.authenticate(client);  // 调用认证函数
     if (!address) return;
+    const { newIntimacy } = data;
     try {
       await UserService.updateIntimacy(address, newIntimacy);
       client.send("updateIntimacyResponse", { success: true, newIntimacy });
@@ -433,9 +435,10 @@ export class TavernRoom extends Room<TavernState> {
   /***
    * 处理收藏请求
    */
-  async handleMarkLikedStory(client: Client, storyId: string) {
+  async handleMarkLikedStory(client: Client, data: any) {
     const address = this.authenticate(client);  // 调用认证函数
     if (!address) return;
+    const { storyId } = data;
     try {
       await StoryService.markLikedStory(address, storyId);
       client.send("markLikedStoryResponse", { success: true });

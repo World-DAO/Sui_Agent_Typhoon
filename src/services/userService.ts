@@ -38,6 +38,7 @@ export class UserService {
         } else {
             // 如果没有找到当天的状态，初始化为默认值
             await setUserState(address, 0, 0, 0);
+            await this.updateWhiskeyPoints(address, 10);
             const newState = await getUserState(address);
             if (!newState) {
                 throw new Error("Failed to initialize user daily state.");
