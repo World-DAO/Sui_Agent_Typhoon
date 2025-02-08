@@ -227,7 +227,6 @@ export class TavernRoom extends Room<TavernState> {
 
     try {
       const story = await StoryService.fetchRandomStory(address);
-      await StoryService.markLikedStory(address, story.id.toString());
       client.send("fetchStoriesResult", { success: true, story });
     } catch (error: any) {
       client.send("fetchStoriesResult", { success: false, reason: error.message });
@@ -418,6 +417,7 @@ export class TavernRoom extends Room<TavernState> {
     const address = this.authenticate(client);  // 调用认证函数
     if (!address) return;
     try {
+      await StoryService.getDailyStories(address);
       const likedStories = await UserService.getLikedStories(address);
       const recvStories = await Promise.all(
         likedStories.map(async (storyId: string) => {

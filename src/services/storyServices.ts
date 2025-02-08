@@ -1,7 +1,7 @@
 // src/services/storyService.ts
 import { addUserPublishedStory, addUserReceivedStory, addUserSentWhiskey, getUserState } from '../database/stateDB';
 import { publishStory, getRandomStory, getStoryByAuthor, Story, addWhiskeyPoints, getStoryById, reply, getReplyByToAddress, Reply, getNewReplyByToAddress, markReplyRead, markReplyUnread, deleteStory } from '../database/storyDB';
-import { getUserPoints, markLikedStory, updateUserPoints } from '../database/userDB';
+import { getUserByAddress, getUserPoints, markLikedStory, updateUserPoints } from '../database/userDB';
 import { STORY_LIMITS } from "../constants";
 
 export class StoryService {
@@ -56,14 +56,47 @@ export class StoryService {
      */
     static async fetchRandomStory(address: string): Promise<Story> {
         // 每日数量限制验证
-        let userState = getUserState(address);
-        if ((await userState).received_num >= STORY_LIMITS.MAX_FETCH) {
+        let userState = await getUserState(address);
+        if (userState.received_num >= STORY_LIMITS.MAX_FETCH) {
             throw new Error("Reach daily recieve story limit!");
         }
-        const story = await getRandomStory();
+        const user = await getUserByAddress(address);
+        if (!user) {
+            throw new Error("User not found.");
+        }
+        const likedStories = user.likedStories;
+        console.log(likedStories);
+        let story = await getRandomStory();
+        while (true) {
+            if (typeof likedStories === 'object' &&
+                !Array.isArray(likedStories) &&
+                Object.keys(likedStories).length === 0) {
+                break;
+            }
+            if (!likedStories.includes(story.id.toString())) {
+                break;
+            }
+            story = await getRandomStory();
+        }
         // 更新状态
         await addUserReceivedStory(address);
+        // 加入列表
+        console.log("story id:", story.id.toString());
+        await markLikedStory(address, story.id.toString());
         return story;
+    }
+
+    /**
+     * 获取用户今天的故事
+     */
+    static async getDailyStories(address: string) {
+        // 查询用户今天领取的故事
+        let dailyState = await getUserState(address);
+        while (dailyState.received_num < STORY_LIMITS.MAX_FETCH) {
+            await this.fetchRandomStory(address);
+            dailyState = await getUserState(address);
+            console.log(dailyState);
+        }
     }
 
     /**
