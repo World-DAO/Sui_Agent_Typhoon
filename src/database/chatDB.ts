@@ -10,7 +10,7 @@ import { query } from './index';
 export async function saveChatMessage(userId: string, role: "user" | "ai", content: string) {
     try {
         await query(
-            "INSERT INTO ChatHistory (user_id, role, content, message_hash) VALUES (?, ?, ?)",
+            "INSERT INTO ChatHistory (user_id, role, content) VALUES (?, ?, ?)",
             [userId, role, content]
         );
     } catch (error) {
