@@ -1,4 +1,4 @@
-import { createTransaction, getTransactionByReply, updateTransactionStatus, claimTransaction } from "../database/suiTxnDB";
+import { createTransaction, getTransactionByReply, updateTransactionStatus, claimTransaction, createUserPayment, createReplyInSession, claimSessionRewards, createUserSession } from "../database/suiTxnDB";
 
 export class TxnService {
     /**
@@ -65,4 +65,48 @@ export class TxnService {
             return { success: false, message: "Failed to claim transaction" };
         }
     }
+
+    /**
+     * 用户支付（创建交易对象）
+     * @param objectId 交易对象ID
+     * @param sender 发送人
+     * @param receiver 接收人
+     * @param amount 交易金额
+     * @param tokenType 代币类型
+     */
+    static async initiateUserPayment(objectId: string, sender: string, receiver: string, amount: number, tokenType: string) {
+        return await createUserPayment(objectId, sender, receiver, amount, tokenType);
+    }
+
+    /**
+         * 用户支付并创建会话
+         * @param txnObjectId 交易对象ID
+         * @param sessionId 会话ID
+         * @param userAddress 用户地址
+         * @param receiverAddress 目标地址
+         * @param amount 交易金额
+         * @param tokenType 代币类型
+         */
+    static async startUserSession(txnObjectId: string, sessionId: string, userAddress: string, receiverAddress: string, amount: number, tokenType: string) {
+        return await createUserSession(txnObjectId, sessionId, userAddress, receiverAddress, amount, tokenType);
+    }
+
+    /**
+     * AI 在会话中回复 & 发送 NFT
+     * @param nftObjectId NFT 对象 ID
+     * @param userAddress 用户地址
+     * @param content AI 生成的内容
+     */
+    static async aiReplyWithNFT(nftObjectId: string, userAddress: string, content: string) {
+        return await createReplyInSession(nftObjectId, userAddress, content);
+    }
+
+    /**
+     * 用户领取 AI 会话奖励（领取 NFT）
+     * @param userAddress 用户地址
+     */
+    static async claimRewards(userAddress: string) {
+        return await claimSessionRewards(userAddress);
+    }
+
 }

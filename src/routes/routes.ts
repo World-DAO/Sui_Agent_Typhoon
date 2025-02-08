@@ -109,4 +109,60 @@ router.post("/claim", async (req, res) => {
     res.json(response);
 });
 
+/**
+ * @route POST /transactions/userSession
+ * @desc 用户支付并创建会话
+ */
+router.post("/userSession", async (req, res) => {
+    const { txnObjectId, sessionId, userAddress, receiverAddress, amount, tokenType } = req.body;
+
+    if (!txnObjectId || !sessionId || !userAddress || !receiverAddress || !amount || !tokenType) {
+        return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    try {
+        const response = await TxnService.startUserSession(txnObjectId, sessionId, userAddress, receiverAddress, amount, tokenType);
+        res.json({ success: true, data: response });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+/**
+ * @route POST /transactions/aiReply
+ * @desc AI 发送回复并创建 NFT
+ */
+router.post("/aiReply", async (req, res) => {
+    const { nftObjectId, userAddress, content } = req.body;
+
+    if (!nftObjectId || !userAddress || !content) {
+        return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    try {
+        const response = await TxnService.aiReplyWithNFT(nftObjectId, userAddress, content);
+        res.json({ success: true, data: response });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+/**
+ * @route POST /transactions/claimRewards
+ * @desc 领取 AI 会话奖励（NFT）
+ */
+router.post("/claimRewards", async (req, res) => {
+    const { userAddress } = req.body;
+
+    if (!userAddress) {
+        return res.status(400).json({ success: false, message: "User address is required" });
+    }
+
+    try {
+        const response = await TxnService.claimRewards(userAddress);
+        res.json({ success: true, data: response });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
 export default router;

@@ -1,0 +1,8 @@
+CREATE TABLE NFT_Mint (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nft_object_id VARCHAR(255) NOT NULL UNIQUE,
+    owner VARCHAR(255) NOT NULL,
+    session_id VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (session_id) REFERENCES Session (session_id) ON DELETE CASCADE
+);
