@@ -6,3 +6,11 @@ export async function createTransaction(objectId: string, sender: string, receiv
         [objectId, sender, receiver, amount, tokenType]
     );
 }
+
+export async function getTransactionByReply(replyId: string) {
+    const object_id = await query(
+        `SELECT object_id FROM transaction_reply_mapping WHERE reply_id = ?`,
+        [replyId]
+    );
+
+}

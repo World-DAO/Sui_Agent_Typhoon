@@ -71,19 +71,16 @@ export class UserService {
 
         let likedStories = user.likedStories;
 
-        if (typeof likedStories === "string") {
-            try {
-                likedStories = JSON.parse(likedStories);
-            } catch (error) {
-                console.error("❌ JSON 解析失败:", error);
-                throw new Error("Invalid likedStories JSON format.");
-            }
-        }
+        console.log(likedStories);
 
         // 处理 `{}` 为空数组
         if (typeof likedStories === "object" && likedStories !== null && !Array.isArray(likedStories)) {
             console.warn("⚠️ likedStories 是 `{}`，转换为空数组");
             likedStories = [];
+        }
+
+        if (typeof likedStories === "string") {
+            likedStories = JSON.parse(likedStories);
         }
 
         // **确保 `likedStories` 是数组**

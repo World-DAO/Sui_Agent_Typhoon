@@ -128,7 +128,7 @@ describe("testing your Colyseus app", () => {
     const serverUrl = "ws://localhost:2567";
     const client = new Client(serverUrl);
 
-    const testPrivateKey = 'ae40f25bfbf17152534e66905ae98621d9d3c35e1831b84fb2185496fc0c25ed';
+    const testPrivateKey = '8474d4c25d6a68f49ab51fe6061a01bbffd3d113cf1c25beeefc2a6ef74bc86d';
     const wallet = new ethers.Wallet(testPrivateKey);
     const address = wallet.address;
 
