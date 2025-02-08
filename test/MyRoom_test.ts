@@ -178,11 +178,11 @@ describe("testing your Colyseus app", () => {
     expect(token).to.have.length.greaterThan(0);
 
     // Simulate fetching a story
-    room.send("getRepliesByStoryId", { storyId: "37" });
+    room.send("getRecvStories");
     const fetchResponse = await new Promise<{ success: boolean; story?: any; reason?: string }>((resolve) => {
-      room.onMessage("getRepliesResponse", (data) => {
+      room.onMessage("getRecvStoriesResponse", (data) => {
         resolve(data);
-        console.log("getRepliesResponse: ", JSON.stringify(data));
+        console.log("getRecvStoriesResponse: ", JSON.stringify(data));
       });
     })
     assert.strictEqual(fetchResponse.success, true);

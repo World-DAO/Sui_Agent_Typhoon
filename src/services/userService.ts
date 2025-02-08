@@ -68,7 +68,7 @@ export class UserService {
         if (!user) {
             throw new Error("User not found.");
         }
-        let likedStories = (await user).likedStories;
+        let likedStories = (await user).likedStories ?? "[]";
         if (typeof likedStories === "string") {
             likedStories = JSON.parse(likedStories);
         }
