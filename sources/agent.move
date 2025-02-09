@@ -1,80 +1,133 @@
-module tarven::agent
-use 0x2::table;
-use std::option;
-use std::error;
+module tarven::agent;
+use sui::bag;
+use sui::event;
+use sui::sui::SUI;
+use sui::coin::{Self, Coin};
+use tarven::bar::{mint, TokenInfo};
+use sui::balance::{Self, Balance};
+use std::string::String;
 
 const E_ALREADY_HAS_SESSION: u64 = 100;
-const E_NO_ACTIVE_SESSION: u64 = 101;
+const E_NON_OWNER: u64 = 101;
 
-/// 全局的“AI Agent”或“管理对象”，内部存一个 `Table<address, bool>` 用于跟踪用户是否在会话中
-struct ChatManager has key, store {
+public struct ChatManager has key, store {
     id: UID,
-    active_sessions: table::Table<address, bool>,
+    active_sessions: bag::Bag,
+    payment: Balance<SUI>,
     owner: address,
 }
 
 /// 会话对象
-struct ChatSession has key, store {
+public struct ChatSession has key, store {
     id: UID,
     user: address,
+    amount: u64,
 }
 
-//-------------------------------------------------------------
-/// 初始化ChatManager, 只需执行一次
-//-------------------------------------------------------------
-fun init_manager(ctx: &mut TxContext) {
-    let t = table::new<address, bool>(ctx);
+public struct AgentNFT has key, store {
+    id: UID,
+    owner: address,
+    url: String,
+}
+
+fun init(ctx: &mut TxContext) {
+    let t = bag::new(ctx);
     let mgr = ChatManager {
         id: object::new(ctx),
         active_sessions: t,
+        payment: balance::zero(),
+        owner: ctx.sender(),
     };
-    
-    transfer::share_object(t);
+    event::emit(ChatManagerInitialized {
+        id: object::id(&mgr),
+    });
+
+    transfer::share_object(mgr);
 }
 
-//-------------------------------------------------------------
-/// 用户发起新会话: 先检查 "active_sessions" 里有没有此用户
-//-------------------------------------------------------------
+
 public fun start_chat(
     manager: &mut ChatManager,
-    ctx: &mut TxContext
-): ChatSession {
-    let has_active = table::has_key(&manager.active_sessions, ctx.sender());
-    if (has_active) {
-        abort E_ALREADY_HAS_SESSION;
-    }
-    table::add(&mut manager.active_sessions, ctx.sender(), true);
+    ctx: &mut TxContext,
+    pay: Coin<SUI>
+) {
+    let contain_check = bag::contains(&manager.active_sessions, ctx.sender());
+    assert!(contain_check, E_ALREADY_HAS_SESSION);
+
+    bag::add(&mut manager.active_sessions, ctx.sender(), true);
     let session = ChatSession {
         id: object::new(ctx),
-        user,
-        finished: false,
+        user: ctx.sender(),
+        amount: coin::value(&pay)
     };
+    coin::put(&mut manager.payment, pay);
     transfer::public_transfer(session, manager.owner);
 }
 
-//-------------------------------------------------------------
-/// 结束或完成会话(例如发放奖励后)
-///  - user/AI/谁来调用, 看你需求; 
-///  - 这里假设 user 自己必须finish
-//-------------------------------------------------------------
 public fun finish_chat(
     manager: &mut ChatManager,
-    session: &mut ChatSession,
-    amount: u64,
+    session: ChatSession,
+    _amount: u64,
+    url: String,
+    ctx: &mut TxContext,
+    info: &mut TokenInfo
 ) {
     // 检查当前调用者 == session.user
-    let ChatSession { id, user, finished } = session;
-    let caller = tx_context::sender(manager);
-    assert!(caller == session.user, E_NO_ACTIVE_SESSION);
+    let ChatSession {id, user, amount: _ } = session;
+    assert!(ctx.sender() == manager.owner, E_NON_OWNER);
 
-    // 1) 标记 session.finished = true
-    session.finished = true;
+    let _existed: bool = bag::remove(&mut manager.active_sessions, user);
 
-    // 2) 在table里把 user->true 移除
-    //    这样 user下次可以 start_chat
-    //    也可以 update user->false, depends on your design
-    let existed = table::remove(&mut manager.active_sessions, caller);
-    // remove returns an Option<bool>, 你可以 check it 
-    // or just do "option::destroy(existed);" to ignore
+    mint(info, _amount, user, ctx);
+    transfer::public_transfer(AgentNFT{
+      id: object::new(ctx),
+      owner: user,
+      url,
+    }, user);
     id.delete();
+}
+
+public struct ChatManagerInitialized has copy, drop {
+  id: ID
+}
+
+#[test_only]
+use sui::test_scenario::{Self as ts, Scenario};
+#[test_only]
+const ALICE: address = @0xA;
+#[test_only]
+const BOB: address = @0xB;
+
+#[test_only]
+fun test_coin(ts: &mut Scenario): Coin<SUI> {
+		coin::mint_for_testing<SUI>(42, ts.ctx())
+}
+
+#[test]
+fun test_chat_success() {
+    let mut ts = ts::begin(@0x0);
+    let c = test_coin(&mut ts);
+    {
+      ts.next_tx(ALICE);
+    };
+    ts.next_tx(@0x0);
+    ts::end(ts);
+}
+
+#[test]
+#[expected_failure(abort_code = E_NON_OWNER)]
+fun test_chat_non_owner() {
+    let mut ts = ts::begin(@0x0);
+    let c = test_coin(&mut ts);
+
+    ts::end(ts);
+}
+
+#[test]
+#[expected_failure(abort_code = E_ALREADY_HAS_SESSION)]
+fun test_chat_already_has_session() {
+    let mut ts = ts::begin(@0x0);
+    let c = test_coin(&mut ts);
+
+    ts::end(ts);
 }

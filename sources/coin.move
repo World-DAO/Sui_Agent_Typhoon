@@ -1,13 +1,10 @@
-module tarven::my_token;
+module tarven::bar;
 
-use 0x2::coin::{Self, Coin, TreasuryCap};
-use std::option;
-use std::string;
-use std::error;
+use sui::coin::{Self, Coin, TreasuryCap};
 
-struct BAR has drop {}
+public struct BAR has drop {}
 
-struct TokenInfo has key, store {
+public struct TokenInfo has key, store {
     id: UID,
     current_supply: u64,
     treasury_cap: TreasuryCap<BAR>,
@@ -40,19 +37,16 @@ fun init(witness: BAR, ctx: &mut TxContext) {
 
 }
 
-// public entry fun mint(
-//     info: &mut TokenInfo,
-//     amount: u64,
-//     ctx: &mut TxContext
-// ): Coin<MY_TOKEN> {
-//     // 1) 由 treasury_cap 执行 coin::mint
-//     let coin_minted = coin::mint(&mut info.treasury_cap, amount, ctx);
+public fun mint(
+    info: &mut TokenInfo,
+    amount: u64,
+    to: address,
+    ctx: &mut TxContext
+) {
+    info.current_supply = info.current_supply + amount;
+    transfer::public_transfer(coin::mint(&mut info.treasury_cap, amount, ctx), to)
+}
 
-//     // 2) 更新 current_supply
-//     info.current_supply = info.current_supply + amount;
-
-//     coin_minted
-// }
 
 public fun burn(
     info: &mut TokenInfo,
@@ -65,3 +59,16 @@ public fun read_supply(info: &TokenInfo): u64 {
     info.current_supply
 }
 
+#[test_only]
+use sui::sui::SUI;
+#[test_only]
+use sui::test_scenario::{Self as ts, Scenario};
+#[test_only]
+const ALICE: address = @0xA;
+#[test_only]
+const BOB: address = @0xB;
+
+#[test_only]
+fun test_coin(ts: &mut Scenario): Coin<SUI> {
+		coin::mint_for_testing<SUI>(42, ts.ctx())
+}

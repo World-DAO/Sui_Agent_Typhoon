@@ -1,6 +1,5 @@
 module tarven::send;
 
-use sui::coin::Coin;
 use sui::{dynamic_object_field as dof, event};
 
 const ERR_SENDER_NOT_MATCH: u64 = 101;
@@ -39,7 +38,7 @@ public fun claim_transfer<T: key + store>(
     ctx: &TxContext,
 ):T {
     let coin = dof::remove<TransferObjectKey, T>(&mut st.id, TransferObjectKey {});
-    let SharedTransfer { id, sender, recipient } = st;
+    let SharedTransfer { id, sender:_, recipient } = st;
     assert!(recipient == ctx.sender(), ERR_SENDER_NOT_MATCH);
     event::emit(TransferClaimed {
         tx_id: id.to_inner()
@@ -64,7 +63,9 @@ use sui::sui::SUI;
 #[test_only]
 use sui::test_scenario::{Self as ts, Scenario};
 #[test_only]
-use sui::coin;
+use sui::coin::{Self,Coin};
+#[test_only]
+use sui::balance::Balance;
 #[test_only]
 const ALICE: address = @0xA;
 #[test_only]
@@ -76,20 +77,15 @@ fun test_coin(ts: &mut Scenario): Coin<SUI> {
 		coin::mint_for_testing<SUI>(42, ts.ctx())
 }
 
-/// 测试1：仅测试“create_transfer”能否正常执行，无异常
 #[test]
 fun test_create_transfer() {
     let mut ts = ts::begin(@0x0);
-    // 1) 切到下一笔交易发起人(可选)
     let c = test_coin(&mut ts);
-    // 2) 调用 create_transfer，把 coin 转给 BOB
     create_transfer<Coin<SUI>>(c, BOB, ts.ctx());
-
     ts::end(ts);
 }
 
-/// 测试2：成功的 claim 流程
-///   - ALICE 创建转账 => 仍由 ALICE来认领(因为合约写的是sender才能claim)
+
 #[test]
 fun test_successful_claim() {
     let mut ts = ts::begin(@0x0);
@@ -106,7 +102,7 @@ fun test_successful_claim() {
     ts::end(ts);
 }
 
-/// 测试3：错误场景 => 换一个地址尝试claim，应当报错 ERR_SENDER_NOT_MATCH
+
 #[test]
 #[expected_failure(abort_code = ERR_SENDER_NOT_MATCH)]
 
