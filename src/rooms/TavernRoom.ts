@@ -4,7 +4,7 @@ import { StoryService } from "../services/storyServices";
 import { UserService } from "../services/userService";
 import { ReplyService } from "../services/replyService";
 import { ethers } from "ethers";
-import { generateJWT, verifyJWT, verifySuiSignature } from "../utils/jwtUtils";
+import { generateJWT, recoverETHAddress, verifyJWT, verifySuiSignature } from "../utils/jwtUtils";
 import { getStoryById } from "../database/storyDB";
 
 class Player extends Schema {
@@ -138,7 +138,7 @@ export class TavernRoom extends Room<TavernState> {
 
     try {
       // ether 验证签名
-      // const recoveredAddress = recoverAddress(challenge, signature);
+      // const recoveredAddress = recoverETHAddress(challenge, signature);
       // if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
       //   throw new Error("Signature verification failed.");
       // }

@@ -3,6 +3,7 @@ import { aiService } from "../services/aiService";
 import { StoryService } from "../services/storyServices";
 import { UserService } from "../services/userService";
 import { TxnService } from "../services/txnService";
+import { ReplyService } from "../services/replyService";
 
 const router = express.Router();
 
@@ -97,6 +98,16 @@ router.get("/recv_bottle_msg", async (req, res) => {
         res.json(bottles);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch receive bottle messages" });
+    }
+})
+
+router.get("/get_reply_num/:storyId", async (req, res) => {
+    const { storyId } = req.params;
+    try {
+        const replies = await ReplyService.getRepliesForStory(Number(storyId));
+        res.json({ reply_num: replies.length });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to get reply num by story" });
     }
 })
 
