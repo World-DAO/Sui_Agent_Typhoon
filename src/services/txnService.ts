@@ -1,4 +1,4 @@
-import { createTransaction, getTransactionByReply, updateTransactionStatus, claimTransaction, createUserPayment, createReplyInSession, claimSessionRewards, createUserSession } from "../database/suiTxnDB";
+import { createTransaction, getTransactionByReply, updateTransactionStatus, claimTransaction, createUserPayment, createReplyInSession, claimSessionRewards, createUserSession, getActiveSession, destroySession } from "../database/suiTxnDB";
 
 export class TxnService {
     /**
@@ -99,6 +99,14 @@ export class TxnService {
      */
     static async aiReplyWithNFT(nftObjectId: string, userAddress: string) {
         return await createReplyInSession(nftObjectId, userAddress);
+    }
+
+    static async getActiveSession(userAddress: string) {
+        return await getActiveSession(userAddress);
+    }
+
+    static async destroySession(sessionId: string) {
+        return await destroySession(sessionId);
     }
 
     /**

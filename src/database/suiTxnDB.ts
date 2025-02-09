@@ -96,6 +96,32 @@ export async function createReplyInSession(nftObjectId: string, userAddress: str
 }
 
 /**
+ * 获取用户当前的活跃会话
+ */
+export async function getActiveSession(userAddress: string) {
+    const session = await query(
+        `SELECT * FROM Session WHERE user_address = ? AND status = 'active'`,
+        [userAddress]
+    );
+
+    if (session.length === 0) {
+        throw new Error("No active session found.");
+    }
+
+    return session[0];
+}
+
+/**
+ * AI 销毁用户会话
+ */
+export async function destroySession(sessionId: string) {
+    await query(
+        `UPDATE Session SET status = 'closed' WHERE session_id = ?`,
+        [sessionId]
+    );
+}
+
+/**
  * 关闭会话 & 用户领取代币 & NFT
  */
 export async function claimSessionRewards(userAddress: string) {

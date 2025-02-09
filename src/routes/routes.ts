@@ -200,10 +200,47 @@ router.post("/aiCreateNft", async (req, res) => {
     if (!nftObjectId || !userAddress) {
         return res.status(400).json({ success: false, message: "Missing required fields" });
     }
-
     try {
         const response = await TxnService.aiReplyWithNFT(nftObjectId, userAddress);
         res.json({ success: true, data: response });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+/**
+ * @route GET /userSession/:userAddress
+ * @desc 获取用户的活动会话
+ */
+router.get("/userSession", async (req, res) => {
+    const { userAddress } = req.query;
+
+    if (!userAddress) {
+        return res.status(400).json({ success: false, message: "User address is required" });
+    }
+
+    try {
+        const session = await TxnService.getActiveSession(userAddress.toString());
+        res.json({ success: true, session });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+/**
+ * @route POST /destroySession
+ * @desc AI 端销毁会话
+ */
+router.post("/destroySession", async (req, res) => {
+    const { sessionId } = req.body;
+
+    if (!sessionId) {
+        return res.status(400).json({ success: false, message: "Session ID is required" });
+    }
+
+    try {
+        await TxnService.destroySession(sessionId);
+        res.json({ success: true, message: "Session destroyed successfully." });
     } catch (error: any) {
         res.status(500).json({ success: false, message: error.message });
     }
