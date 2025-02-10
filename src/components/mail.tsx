@@ -8,6 +8,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { EventBus } from '@/game/EventBus';
 import ColyseusClient, { Story, Reply } from '@/game/utils/ColyseusClient';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient, useSuiClientQuery } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
+import { PACKAGE_ID } from "@/components/config/suiConstant";
 
 // Mock data for bar stories (stories received from others)
 const MOCK_BAR_STORIES: Story[] = [
@@ -85,6 +88,8 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [replyGroups, setReplyGroups] = useState<{ [key: string]: Reply[] }>({});
   const [recipient, setRecipient] = useState<string>("");
 
+  const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+  const suiClient = useSuiClient();
   const [approveAmount, setApproveAmount] = useState(0)
 
   const [isSending, setIsSending] = useState(false);
@@ -92,23 +97,40 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
 
   const sendCoin = async () => {
     if (!approveAmount || isSending) return;
-    console.log(approveAmount)
-    console.log("reci::"+recipient)
-    setIsSending(true);
-    try {
-        // 先批准代币
-       
-        
-        setApproveAmount(0); // 清空输入框
-    } catch (error) {
-        console.error("Failed to send coin:", error);
-    } finally {
-        setIsSending(false);
-    }
+      const tx = new Transaction();
+      const [coin] = tx.splitCoins(tx.gas, [approveAmount*10**9]);
+
+      tx.moveCall({
+        arguments: [tx.object(coin), tx.pure.address(recipient)],
+        typeArguments: ["0x2::coin::Coin<0x2::sui::SUI>"],
+        target: `${PACKAGE_ID}::send::create_transfer`,
+      });
+      signAndExecute(
+        {
+          transaction: tx,
+        },
+        {
+          onSuccess: async ({ digest }) => {
+            const { effects } = await suiClient.waitForTransaction({
+              digest: digest,
+              options: {
+                showEffects: true,  
+              },
+            })
+          },
+        },
+      );
   }
 
-  const claimCoin = async (id: number) => {
-    
+  const claimCoin = async (id: string) => {
+    const tx = new Transaction();
+    const obj = tx.object(id);
+    tx.moveCall({
+      arguments: [obj],
+      target: `${PACKAGE_ID}::send::claim_transfer`,
+      typeArguments: ["0x2::coin::Coin<0x2::sui::SUI>"],
+    });
+    signAndExecute({ transaction: tx });
   }
 
 
