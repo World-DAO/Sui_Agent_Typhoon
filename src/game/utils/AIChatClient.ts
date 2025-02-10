@@ -4,11 +4,11 @@ class AIChatClient {
     private static instance: AIChatClient;
     private isStreaming = false;
     // Use proxy URL in development
-    private API_URL = process.env.NODE_ENV === 'development' 
+    private API_URL = process.env.NODE_ENV === 'development'
         ? '/api/chat'  // This will be proxied
-        : "http://43.134.74.254:8080/api/chat";
+        : "https://www.emptylab.org/api/chat";
 
-    private constructor() {}
+    private constructor() { }
 
     public static getInstance(): AIChatClient {
         if (!AIChatClient.instance) {
@@ -26,12 +26,12 @@ class AIChatClient {
         try {
             // 立即显示一个加载状态
             EventBus.emit("chat-loading", true);
-            
+
             console.log("🚀 Sending message to AI:", message);
             this.isStreaming = true;
             const response = await fetch(this.API_URL, {
                 method: "POST",
-                headers: { 
+                headers: {
                     "Content-Type": "application/json",
                     // 确保不被代理缓存
                     "Cache-Control": "no-cache",
