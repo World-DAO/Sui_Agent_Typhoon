@@ -37,11 +37,14 @@ export class SceneManager {
     }
 
     private createDriftBottleButton() {
+        const originalScale = 0.5;
+        const hoverScale = originalScale * 1.1
+
         const driftbottleButton = this.scene.add
-            .image(this.scene.scale.width/2-88, 200, "driftbottle")
-            .setScale(0.5)
+            .image(this.scene.scale.width/2-35, 230, "driftbottle")
+            .setScale(originalScale)
             .setInteractive()
-            .setOrigin(0)
+            .setOrigin(0.5)
             .setScrollFactor(0);
 
         driftbottleButton.on("pointerdown", () => {
@@ -53,6 +56,29 @@ export class SceneManager {
             }
         });
         this.UI.push(driftbottleButton);
+
+        
+        driftbottleButton.on('pointerover', () => {
+            this.scene.input.manager.canvas.style.cursor = 'pointer';
+    
+            this.scene.tweens.add({
+                targets: driftbottleButton,
+                scale: hoverScale,
+                duration: 100,
+                ease: 'Linear'
+            });
+        });
+        
+        driftbottleButton.on('pointerout', () => {
+            this.scene.input.manager.canvas.style.cursor = 'default';
+    
+            this.scene.tweens.add({
+                targets: driftbottleButton,
+                scale: originalScale,
+                duration: 100,
+                ease: 'Linear'
+            });
+        });
     }
 
     // 原有的场景管理方法
@@ -106,11 +132,19 @@ export class SceneManager {
         this.barman = new Barman(
             this.scene,
             7 * this.gridSize,
-            5.1 * this.gridSize,
+            6 * this.gridSize,
             "barwoman"
         );
         this.barman.sprite.setInteractive();
         this.barman.sprite.setDisplaySize(this.gridSize*1.6, this.gridSize*3);
+
+        this.barman.sprite.on('pointerover', () => {
+            this.scene.input.manager.canvas.style.cursor = 'pointer';
+        });
+        
+        this.barman.sprite.on('pointerout', () => {
+            this.scene.input.manager.canvas.style.cursor = 'default';
+        });
     }
 
     private setupCamera() {
