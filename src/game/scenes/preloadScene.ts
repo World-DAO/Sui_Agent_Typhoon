@@ -139,7 +139,6 @@ export class preloadScene extends Scene {
             frameHeight: 550,
         });
         this.load.image("user", "animation/david.png");
-        this.load.image("bottle", "animation/bottle.png");
         this.load.image("barwoman", "animation/lucy.png");
         this.load.image('driftbottle', 'img/driftbottle.png');
         this.load.audio("theme", [

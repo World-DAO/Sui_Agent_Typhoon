@@ -8,6 +8,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { EventBus } from '@/game/EventBus';
 import ColyseusClient, { Story, Reply } from '@/game/utils/ColyseusClient';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient, useSuiClientQuery } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
+import { PACKAGE_ID } from "@/components/config/suiConstant";
 
 // Mock data for bar stories (stories received from others)
 const MOCK_BAR_STORIES: Story[] = [
@@ -85,30 +88,73 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [replyGroups, setReplyGroups] = useState<{ [key: string]: Reply[] }>({});
   const [recipient, setRecipient] = useState<string>("");
 
-  const [approveAmount, setApproveAmount] = useState(0)
+  const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+  const suiClient = useSuiClient();
+  const account = useCurrentAccount();
+  const [approveAmount, setApproveAmount] = useState(0);
 
   const [isSending, setIsSending] = useState(false);
   const [claimStatus, setClaimStatus] = useState<string>("");
 
+  // const { data: balance } = useSuiClientQuery(
+  //   "getBalance",
+  //   {
+  //     owner: account?.address || "",
+  //     coinType: `${PACKAGE_ID}::bar::BAR`
+  //   },
+  //   {
+  //     enabled: !!account?.address,
+  //     refetchInterval: 3000
+  //   }
+  // );
+  const { data: balance } = useSuiClientQuery(
+    "getBalance",
+    {
+      owner: account?.address || "",
+      coinType: `0x2::sui::SUI`
+    },
+    {
+      enabled: !!account?.address,
+      refetchInterval: 3000
+    }
+  );
+
   const sendCoin = async () => {
     if (!approveAmount || isSending) return;
-    console.log(approveAmount)
-    console.log("reci::"+recipient)
-    setIsSending(true);
-    try {
-        // 先批准代币
-       
-        
-        setApproveAmount(0); // 清空输入框
-    } catch (error) {
-        console.error("Failed to send coin:", error);
-    } finally {
-        setIsSending(false);
-    }
+      const tx = new Transaction();
+      const [coin] = tx.splitCoins(tx.gas, [approveAmount*10**9]);
+
+      tx.moveCall({
+        arguments: [tx.object(coin), tx.pure.address(recipient)],
+        typeArguments: ["0x2::coin::Coin<0x2::sui::SUI>"],
+        target: `${PACKAGE_ID}::send::create_transfer`,
+      });
+      signAndExecute(
+        {
+          transaction: tx,
+        },
+        {
+          onSuccess: async ({ digest }) => {
+            const { effects } = await suiClient.waitForTransaction({
+              digest: digest,
+              options: {
+                showEffects: true,  
+              },
+            })
+          },
+        },
+      );
   }
 
-  const claimCoin = async (id: number) => {
-    
+  const claimCoin = async (id: string) => {
+    const tx = new Transaction();
+    const obj = tx.object(id);
+    // tx.moveCall({
+    //   arguments: [obj],
+    //   target: `${PACKAGE_ID}::send::claim_transfer`,
+    //   typeArguments: ["0x2::coin::Coin<0x2::sui::SUI>"],
+    // });
+    // signAndExecute({ transaction: tx });
   }
 
 
@@ -347,7 +393,11 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
                              text-[#4EEAFF] placeholder:text-[#4EEAFF]/50 
                              focus:outline-none focus:border-[#4EEAFF]/50"
                 />
-                <p className="w-18 text-[#4EEAFF] mt-2">0x666&nbsp;&nbsp;&nbsp; barcoin:38</p>
+                <p className="w-18 text-[#4EEAFF] mt-2">
+                  {account?.address?.slice(0,4)}...{account?.address?.slice(-4)}&nbsp;&nbsp;&nbsp;
+                   barcoin(SUI):{Number(balance?.totalBalance)/10**9}
+                </p>
+
               </div>
             </div>
             <ScrollArea className="h-[calc(100vh-16rem)]">
@@ -562,7 +612,7 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
                                                     </div>
                                                 </div>
                                                 <button
-                                                  onClick={() => claimCoin(0)} // 根据实际合约调整参数
+                                                  onClick={() => claimCoin("3")}
                                                   className="px-3 py-1 bg-[#FFD700] border-2 border-[#B8860B] 
                                                           text-[#8B4513] hover:bg-[#FFC125] transition-colors
                                                           font-pixel text-sm pixel-corners flex items-center gap-1 ml-6"

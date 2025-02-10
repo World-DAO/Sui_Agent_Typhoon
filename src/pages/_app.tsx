@@ -1,3 +1,6 @@
+import { networkConfig } from "@/components/config/networkConfig";
+import { WalletProvider } from "@mysten/dapp-kit";
+import { SuiClientProvider } from "@mysten/dapp-kit";
 import "@/styles/globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
@@ -8,8 +11,12 @@ const queryClient = new QueryClient();
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      {/* 如果有其他 Provider 需要放在这里 */}
-      <Component {...pageProps} />
+      <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
+        <WalletProvider autoConnect>
+          {/* 如果有其他 Provider 需要放在这里 */}
+          <Component {...pageProps} />
+        </WalletProvider>
+      </SuiClientProvider>
     </QueryClientProvider>
   );
 }
