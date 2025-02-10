@@ -149,12 +149,12 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const claimCoin = async (id: string) => {
     const tx = new Transaction();
     const obj = tx.object(id);
-    tx.moveCall({
-      arguments: [obj],
-      target: `${PACKAGE_ID}::send::claim_transfer`,
-      typeArguments: ["0x2::coin::Coin<0x2::sui::SUI>"],
-    });
-    signAndExecute({ transaction: tx });
+    // tx.moveCall({
+    //   arguments: [obj],
+    //   target: `${PACKAGE_ID}::send::claim_transfer`,
+    //   typeArguments: ["0x2::coin::Coin<0x2::sui::SUI>"],
+    // });
+    // signAndExecute({ transaction: tx });
   }
 
 
@@ -612,7 +612,7 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
                                                     </div>
                                                 </div>
                                                 <button
-                                                  onClick={() => claimCoin(0)}
+                                                  onClick={() => claimCoin("3")}
                                                   className="px-3 py-1 bg-[#FFD700] border-2 border-[#B8860B] 
                                                           text-[#8B4513] hover:bg-[#FFC125] transition-colors
                                                           font-pixel text-sm pixel-corners flex items-center gap-1 ml-6"
