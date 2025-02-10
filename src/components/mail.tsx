@@ -129,9 +129,10 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
         typeArguments: ["0x2::coin::Coin<0x2::sui::SUI>"],
         target: `${PACKAGE_ID}::send::create_transfer`,
       });
+
       signAndExecute(
         {
-          transaction: tx,
+          transaction: tx.serialize(),
         },
         {
           onSuccess: async ({ digest }) => {
@@ -156,7 +157,6 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
     // });
     // signAndExecute({ transaction: tx });
   }
-
 
   const fetchStories = async (isMyStoriesView: boolean) => {
     setLoading(true);
