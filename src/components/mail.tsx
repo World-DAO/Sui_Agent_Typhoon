@@ -262,28 +262,32 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     if (e.key === ' ') {
-      e.preventDefault();
-      const target = e.target as HTMLTextAreaElement;
-      const start = target.selectionStart;
-      const end = target.selectionEnd;
-      const value = target.value;
-      const newValue = value.substring(0, start) + ' ' + value.substring(end);
-      
-      // For reply text
-      if (target.placeholder.includes('reply')) {
-        setReplyText(newValue);
-      } 
-      // For new story
-      else if (target.placeholder.includes('story')) {
-        setNewStoryContent(newValue);
-      }
-      
-      // Set cursor position after the space
-      setTimeout(() => {
-        target.selectionStart = target.selectionEnd = start + 1;
-      }, 0);
+        e.preventDefault();
+        const target = e.target as HTMLTextAreaElement | HTMLInputElement;
+        const start = target.selectionStart ?? 0;
+        const end = target.selectionEnd ?? 0;
+        const value = target.value;
+        const newValue = value.substring(0, start) + ' ' + value.substring(end);
+        
+        // For reply text
+        if (target.placeholder.includes('reply')) {
+            setReplyText(newValue);
+        } 
+        // For new story content
+        else if (target.placeholder.includes('story')) {
+            setNewStoryContent(newValue);
+        }
+        // For story title
+        else if (target.placeholder.includes('title')) {
+            setNewStoryTitle(newValue);
+        }
+        
+        // Set cursor position after the space
+        setTimeout(() => {
+            target.selectionStart = target.selectionEnd = start + 1;
+        }, 0);
     }
   };
 
@@ -414,7 +418,8 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
                       type="text"
                       value={newStoryTitle}
                       onChange={(e) => setNewStoryTitle(e.target.value)}
-                      placeholder="Story Title..."
+                      placeholder="Write your title here..."
+                      onKeyDown={handleKeyDown}
                       className="w-full bg-[#2A2A2F] border-2 border-[#4A4A4F] p-3 
                                text-[#4EEAFF] placeholder:text-[#4EEAFF]/50 
                                focus:outline-none focus:border-[#4EEAFF]/50"
@@ -489,7 +494,7 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
                                             text-[#4EEAFF] hover:bg-[#9D5BDE] transition-colors
                                             font-pixel text-sm pixel-corners flex items-center gap-1"
                                 >
-                                    <span className="text-lg">🥃</span>
+                                    <span className="text-lg">🍷</span>
                                     Like
                                 </button>
                               </div>
