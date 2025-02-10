@@ -3,10 +3,8 @@ import { EventBus } from '../EventBus';
 class AIChatClient {
     private static instance: AIChatClient;
     private isStreaming = false;
-    // Use proxy URL in development
-    private API_URL = process.env.NODE_ENV === 'development'
-        ? '/api/chat'  // This will be proxied
-        : "https://www.emptylab.org/api/chat";
+    // 直接使用服务端 API URL，不再使用代理
+    private API_URL = "https://www.emptylab.org/api/chat";
 
     private constructor() { }
 
