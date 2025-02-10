@@ -95,8 +95,8 @@ public struct ChatManagerInitialized has copy, drop {
 use sui::test_scenario::{Self as ts, Scenario};
 #[test_only]
 const ALICE: address = @0xA;
-#[test_only]
-const BOB: address = @0xB;
+//#[test_only]
+//const BOB: address = @0xB;
 
 #[test_only]
 fun test_coin(ts: &mut Scenario): Coin<SUI> {
@@ -106,7 +106,7 @@ fun test_coin(ts: &mut Scenario): Coin<SUI> {
 #[test]
 fun test_chat_success() {
     let mut ts = ts::begin(@0x0);
-    let c = test_coin(&mut ts);
+    //let c = test_coin(&mut ts);
     {
       ts.next_tx(ALICE);
     };
@@ -118,7 +118,7 @@ fun test_chat_success() {
 #[expected_failure(abort_code = E_NON_OWNER)]
 fun test_chat_non_owner() {
     let mut ts = ts::begin(@0x0);
-    let c = test_coin(&mut ts);
+    //let c = test_coin(&mut ts);
 
     ts::end(ts);
 }
@@ -127,7 +127,7 @@ fun test_chat_non_owner() {
 #[expected_failure(abort_code = E_ALREADY_HAS_SESSION)]
 fun test_chat_already_has_session() {
     let mut ts = ts::begin(@0x0);
-    let c = test_coin(&mut ts);
+    //let c = test_coin(&mut ts);
 
     ts::end(ts);
 }

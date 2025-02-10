@@ -2,3 +2,4 @@ build/*
 sdk/*
 .env
 node_modules
+command
