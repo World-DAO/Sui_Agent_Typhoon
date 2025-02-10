@@ -18,7 +18,6 @@ type TestResponse = {
 };
 
 export function ReactPhaserBridge() {
-  const { data: userData, mutate: refreshUserData } = useGet<TestResponse>("/api/test?userId=1");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { currentWallet } = useCurrentWallet();
 
@@ -27,7 +26,7 @@ export function ReactPhaserBridge() {
       try {
         setIsModalOpen(true);
       } catch (error) {
-        console.error("打开钱包选择失败:", error);
+        console.error("Failed to open wallet selector:", error);
       }
     };
 
@@ -40,13 +39,13 @@ export function ReactPhaserBridge() {
 
   const handleGameStart = async () => {
     if (!currentWallet || !currentWallet.accounts.length) {
-      console.error("❌ 钱包未连接！");
-      alert("请先连接钱包！");
+      console.error("❌ Wallet not connected!");
+      alert("Please connect your wallet first!");
       return;
     }
 
     const address = currentWallet.accounts[0].address;
-    console.log("🎮 连接 Colyseus，钱包地址:", address);
+    console.log("🎮 Connecting to Colyseus, wallet address:", address);
 
     try {
       const room = await ColyseusClient.joinRoom(address);
@@ -61,7 +60,7 @@ export function ReactPhaserBridge() {
           }
         });
 
-        setTimeout(() => reject(new Error("⏳ Challenge out of time")), 5000);
+        setTimeout(() => reject(new Error("⏳ Challenge timeout")), 5000);
       });
 
       console.log("Challenge:", loginChallenge.challenge);
@@ -77,7 +76,7 @@ export function ReactPhaserBridge() {
 
       console.log("signature:", signedData.signature);
 
-      // ✅ 发送正确的签名
+      // ✅ Send valid signature
       ColyseusClient.sendMessage("loginSignature", {
         address,
         signature: signedData.signature,
@@ -103,12 +102,12 @@ export function ReactPhaserBridge() {
           },
         });
 
-        setIsModalOpen(false); // 关闭钱包选择弹窗
+        setIsModalOpen(false); // Close wallet selection modal
       } else {
-        console.error("❌ 登录失败:", loginResponse.reason);
+        console.error("❌ Login failed:", loginResponse.reason);
       }
     } catch (error) {
-      console.error("❌ 进入游戏失败:", error);
+      console.error("❌ Failed to enter game:", error);
     }
   };
 

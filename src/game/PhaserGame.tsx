@@ -2,7 +2,6 @@ import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
 import StartGame from './main';
 import { EventBus } from './EventBus';
 import { ReactPhaserBridge } from './utils/login';
-import { HtmlOverlay } from '@/components/bottle';
 import { Mail } from "@/components/mail"
 import { SuiClientProvider, WalletProvider } from '@mysten/dapp-kit';
 
@@ -63,10 +62,9 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(function PhaserGame
             <SuiClientProvider>
                 <WalletProvider autoConnect>
                     <ReactPhaserBridge />
+                    <Mail />
                 </WalletProvider>
             </SuiClientProvider>
-            <Mail />
-            {/* <HtmlOverlay /> */}
         </div >
     );
 });

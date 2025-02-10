@@ -1,5 +1,5 @@
-import { Scene } from 'phaser';
-import { EventBus } from '../EventBus';
+import { Scene } from "phaser";
+import { EventBus } from "../EventBus";
 
 interface LoginResponse {
     success: boolean;
@@ -16,79 +16,204 @@ export class loginScene extends Scene {
     private connectButtonContainer: Phaser.GameObjects.DOMElement;
 
     constructor() {
-        super('login');
+        super("login");
     }
 
     preload() {
-        // 如果有按钮图像，可以在这里加载
-        this.load.image('loginButton', 'assets/buttons/loginButton.png');
+        // Load background image
+        this.load.image("cover", "img/cover.png");
     }
 
     create() {
-        const width = Math.min(window.innerWidth, 1195);
-        const height = Math.min(window.innerHeight, 550);
+        const { width, height } = this.scale;
 
-        // 添加标题
-        this.add.text(width / 2, height * 0.4, '欢迎来到 Web3 酒馆', {
-            fontSize: '32px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
+        // 1. 添加背景图并调整亮度
+        const background = this.add
+            .image(width / 2, height / 2, "cover")
+            .setOrigin(0.5)
+            .setDisplaySize(width, height)
+            .setTint(0x666666); // 使用较暗的色调，可以调整这个值来控制亮度
 
-        // 动态创建 ConnectButton 的容器
-        this.connectButtonContainer = this.add.dom(width / 2, height * 0.6).createElement('div');
+        // 2. 添加黑色蒙版
+        const overlay = this.add.graphics();
+        overlay.fillStyle(0x000000, 0.05);
+        overlay.fillRect(0, 0, width, height);
 
-        // 创建按钮背景（使用图形）
-        const buttonWidth = 200;
-        const buttonHeight = 50;
+        // 3. 添加登录按钮
 
-        const button = this.add.rectangle(width / 2, height * 0.6, buttonWidth, buttonHeight, 0x00aaff)
-            .setInteractive({ useHandCursor: true })
-            .on('pointerover', () => button.setFillStyle(0x0088cc))
-            .on('pointerout', () => button.setFillStyle(0x00aaff))
-            .on('pointerdown', () => this.handleLogin());
+        // 添加按钮悬停效果
 
-        // 添加按钮文本
-        this.loginText = this.add.text(width / 2, height * 0.6, '登录', {
-            fontSize: '24px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
+        // Get full screen size
+        const fullWidth = window.innerWidth;
+        const fullHeight = window.innerHeight;
 
-        // 监听登录响应
-        EventBus.on('phaser_loginResponse', (response: LoginResponse) => {
+        // Add title with elegant style
+        const title = this.add
+            .text(fullWidth / 2, fullHeight * 0.4, "Welcome to BEFORELIFE", {
+                fontSize: "48px",
+                color: "#ffffff",
+                fontFamily: "Georgia, serif",
+                stroke: "#000000",
+                strokeThickness: 4,
+                shadow: {
+                    offsetX: 2,
+                    offsetY: 2,
+                    color: "#000000",
+                    blur: 2,
+                    stroke: true,
+                    fill: true,
+                },
+            })
+            .setOrigin(0.5);
+
+        // Add title animation effect
+        this.tweens.add({
+            targets: title,
+            scale: { from: 0.95, to: 1.05 },
+            duration: 2000,
+            ease: "Sine.easeInOut",
+            yoyo: true,
+            repeat: -1,
+        });
+
+        // Dynamically create ConnectButton container
+        this.connectButtonContainer = this.add
+            .dom(fullWidth / 2, fullHeight * 0.6)
+            .createElement("div");
+
+        // Create elegant button background
+        const buttonWidth = 240;
+        const buttonHeight = 60;
+        const button = this.add.graphics();
+
+        // Button background - solid color with rounded corners
+        button.lineStyle(2, 0xffffff, 1);
+        button.fillStyle(0x4a90e2, 1);
+        button.fillRoundedRect(
+            fullWidth / 2 - buttonWidth / 2,
+            fullHeight * 0.6 - buttonHeight / 2,
+            buttonWidth,
+            buttonHeight,
+            15
+        );
+        button.strokeRoundedRect(
+            fullWidth / 2 - buttonWidth / 2,
+            fullHeight * 0.6 - buttonHeight / 2,
+            buttonWidth,
+            buttonHeight,
+            15
+        );
+
+        button
+            .setInteractive(
+                new Phaser.Geom.Rectangle(
+                    fullWidth / 2 - buttonWidth / 2,
+                    fullHeight * 0.6 - buttonHeight / 2,
+                    buttonWidth,
+                    buttonHeight
+                ),
+                Phaser.Geom.Rectangle.Contains
+            )
+            .on("pointerover", () => {
+                button.clear();
+                button.lineStyle(2, 0xffffff, 1);
+                button.fillStyle(0x357abd, 1);
+                button.fillRoundedRect(
+                    fullWidth / 2 - buttonWidth / 2,
+                    fullHeight * 0.6 - buttonHeight / 2,
+                    buttonWidth,
+                    buttonHeight,
+                    15
+                );
+                button.strokeRoundedRect(
+                    fullWidth / 2 - buttonWidth / 2,
+                    fullHeight * 0.6 - buttonHeight / 2,
+                    buttonWidth,
+                    buttonHeight,
+                    15
+                );
+            })
+            .on("pointerout", () => {
+                button.clear();
+                button.lineStyle(2, 0xffffff, 1);
+                button.fillStyle(0x4a90e2, 1);
+                button.fillRoundedRect(
+                    fullWidth / 2 - buttonWidth / 2,
+                    fullHeight * 0.6 - buttonHeight / 2,
+                    buttonWidth,
+                    buttonHeight,
+                    15
+                );
+                button.strokeRoundedRect(
+                    fullWidth / 2 - buttonWidth / 2,
+                    fullHeight * 0.6 - buttonHeight / 2,
+                    buttonWidth,
+                    buttonHeight,
+                    15
+                );
+            })
+            .on("pointerdown", () => this.handleLogin());
+
+        // Add button text with elegant style
+        this.loginText = this.add
+            .text(fullWidth / 2, fullHeight * 0.6, "Connect Wallet", {
+                fontSize: "26px",
+                color: "#ffffff",
+                fontFamily: "Arial, sans-serif",
+                fontStyle: "bold",
+                shadow: {
+                    offsetX: 1,
+                    offsetY: 1,
+                    color: "#000000",
+                    blur: 2,
+                    fill: true,
+                },
+            })
+            .setOrigin(0.5);
+
+        // Listen for login response
+        EventBus.on("phaser_loginResponse", (response: LoginResponse) => {
             if (response.success) {
-                console.log('登录成功:', response.data);
-                // 存储用户信息到游戏注册表中
-                this.registry.set('userData', response.data);
-                // 延迟一秒后跳转，让用户看到成功信息
+                console.log("success:", response.data);
+                // Store user info in game registry
+                this.registry.set("userData", response.data);
+                // Delay 1 second before transition to let user see success message
                 this.time.delayedCall(1000, () => {
-                    this.scene.start('Preloader');
+                    this.scene.start("Preloader");
                 });
             } else {
-                console.error('登录失败:', response.error);
-                // 显示错误信息
-                this.add.text(width / 2, height * 0.7, `登录失败: ${response.error}`, {
-                    fontSize: '16px',
-                    color: '#ff0000'
-                }).setOrigin(0.5);
+                console.error("failed:", response.error);
+                // Display error message
+                this.add
+                    .text(
+                        fullWidth / 2,
+                        fullHeight * 0.7,
+                        `failed: ${response.error}`,
+                        {
+                            fontSize: "16px",
+                            color: "#ff0000",
+                        }
+                    )
+                    .setOrigin(0.5);
             }
         });
     }
 
     handleLogin() {
-        // 显示加载状态
-        this.loginText.setText('登录中...',)
+        // Show loading status
+        this.loginText.setText("logging...");
 
-        // 触发登录请求
-        EventBus.emit('phaser_loginRequest', {});
+        // Trigger login request
+        EventBus.emit("phaser_loginRequest", {});
 
-        // 添加加载动画
+        // Add loading animation
         this.tweens.add({
             targets: this.loginText,
             alpha: 0.5,
             duration: 500,
-            ease: 'Power2',
+            ease: "Power2",
             yoyo: true,
-            repeat: -1
+            repeat: -1,
         });
     }
 }

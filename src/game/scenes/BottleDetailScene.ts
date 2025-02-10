@@ -39,7 +39,6 @@ export default class BottleDetailScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, this.pageScale.x, this.pageScale.y);
     // 创建返回按钮，固定在屏幕上
     this.creactBack();
-
   }
 
   update(time: number, delta: number) {

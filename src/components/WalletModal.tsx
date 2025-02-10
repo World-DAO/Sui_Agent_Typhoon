@@ -56,10 +56,10 @@ export function WalletModal({ onClose, onGameStart }: WalletModalProps) {
                         textShadow: "0 0 10px #0ff",
                     }}
                 >
-                    🔮 选择钱包
+                    🔮 Select Wallet
                 </h2>
 
-                {/* 钱包列表 */}
+                {/* Wallet List */}
                 <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                     {wallets.length > 0 ? (
                         wallets.map((wallet) => {
@@ -74,13 +74,13 @@ export function WalletModal({ onClose, onGameStart }: WalletModalProps) {
                                                 return;
                                             }
                                             if (!wallet?.name) {
-                                                setError("未找到可用的钱包，请安装 Sui Wallet");
+                                                setError("No wallet found. Please install Sui Wallet");
                                                 return;
                                             }
                                             connect(
-                                                { wallet }, // 💡 确保 wallet 传递正确的类型
+                                                { wallet },
                                                 {
-                                                    onSuccess: () => console.log(`✅ 连接成功: ${wallet.name}`),
+                                                    onSuccess: () => console.log(`✅ Connected: ${wallet.name}`),
                                                     onError: (err: Error) => setError(err.message),
                                                 }
                                             );
@@ -101,10 +101,10 @@ export function WalletModal({ onClose, onGameStart }: WalletModalProps) {
                                     >
                                         {isConnected
                                             ? `✅ ${currentWallet?.accounts?.[0]?.address.slice(0, 6)}...`
-                                            : `连接 ${wallet.name}`}
+                                            : `Connect ${wallet.name}`}
                                     </button>
 
-                                    {/* 断开连接按钮 */}
+                                    {/* Disconnect button */}
                                     {isConnected && (
                                         <button
                                             onClick={() => disconnect()}
@@ -123,7 +123,7 @@ export function WalletModal({ onClose, onGameStart }: WalletModalProps) {
                                                 transition: "all 0.3s ease",
                                             }}
                                         >
-                                            ❌ 断开连接
+                                            ❌ Disconnect
                                         </button>
                                     )}
                                 </li>
@@ -138,17 +138,17 @@ export function WalletModal({ onClose, onGameStart }: WalletModalProps) {
                                 textShadow: "0 0 5px #ff0090",
                             }}
                         >
-                            ❌ 未检测到可用钱包，请安装 Sui Wallet
+                            ❌ No wallet detected. Please install Sui Wallet
                         </p>
                     )}
                 </ul>
 
-                {/* 进入游戏按钮 */}
+                {/* Enter Game button */}
                 <button
                     onClick={() => {
                         if (currentWallet) {
-                            onGameStart(); // ✅ 触发外部的游戏启动事件
-                            onClose(); // 关闭弹窗
+                            onGameStart();
+                            onClose();
                         }
                     }}
                     disabled={!currentWallet}
@@ -167,7 +167,7 @@ export function WalletModal({ onClose, onGameStart }: WalletModalProps) {
                         transition: "all 0.3s ease",
                     }}
                 >
-                    🎮 进入游戏
+                    🎮 Enter Game
                 </button>
             </div>
         </div>

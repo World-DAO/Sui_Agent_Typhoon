@@ -1,35 +1,29 @@
-import { bootScene } from './scenes/bootScene';
-import { AUTO, Game } from 'phaser';
-import { preloadScene } from './scenes/preloadScene';
-import TavernScene from './scenes/tavernScene';
-import { loginScene } from './scenes/loginScene';
-import DriftBottleScene from './scenes/DriftBottleScene';
-import BottleDetailScene from './scenes/BottleDetailScene';
+import { bootScene } from "./scenes/bootScene";
+import { AUTO, Game } from "phaser";
+import { preloadScene } from "./scenes/preloadScene";
+import TavernScene from "./scenes/tavernScene";
+import { loginScene } from "./scenes/loginScene";
+import DriftBottleScene from "./scenes/DriftBottleScene";
+import BottleDetailScene from "./scenes/BottleDetailScene";
 
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
-    width: Math.min(window.innerWidth, 1195),
-    height: Math.min(window.innerHeight, 550),
-    parent: 'game-container',
+    width: Math.min(window.screen.width, 4800),
+    height: Math.min(window.screen.height, 2700),
+    parent: "game-container",
+
     scale: {
-        mode: Phaser.Scale.FIT,
+        mode: Phaser.Scale.ENVELOP,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: Math.min(window.innerWidth, 1195),
-        height: Math.min(window.innerHeight, 550),
-        min: {
-            width: 600,
-            height: 300
-        },
-        max: {
-            width: 1195,
-            height: 550
-        }
+        width: Math.min(window.innerWidth, 4800),
+        height: Math.min(window.innerHeight, 2700),
     },
+
     physics: {
-        default: 'arcade',
+        default: "arcade",
         arcade: {
-            debug: true
-        }
+            //debug: true,
+        },
     },
     scene: [
         bootScene,
@@ -38,11 +32,11 @@ const config: Phaser.Types.Core.GameConfig = {
         TavernScene,
         DriftBottleScene,
         BottleDetailScene,
-    ]
+    ],
 };
 
 const StartGame = (parent: string) => {
     return new Game({ ...config, parent });
-}
+};
 
 export default StartGame;
