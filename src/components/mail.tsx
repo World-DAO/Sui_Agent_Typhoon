@@ -90,10 +90,34 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
 
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
   const suiClient = useSuiClient();
-  const [approveAmount, setApproveAmount] = useState(0)
+  const account = useCurrentAccount();
+  const [approveAmount, setApproveAmount] = useState(0);
 
   const [isSending, setIsSending] = useState(false);
   const [claimStatus, setClaimStatus] = useState<string>("");
+
+  // const { data: balance } = useSuiClientQuery(
+  //   "getBalance",
+  //   {
+  //     owner: account?.address || "",
+  //     coinType: `${PACKAGE_ID}::bar::BAR`
+  //   },
+  //   {
+  //     enabled: !!account?.address,
+  //     refetchInterval: 3000
+  //   }
+  // );
+  const { data: balance } = useSuiClientQuery(
+    "getBalance",
+    {
+      owner: account?.address || "",
+      coinType: `0x2::sui::SUI`
+    },
+    {
+      enabled: !!account?.address,
+      refetchInterval: 3000
+    }
+  );
 
   const sendCoin = async () => {
     if (!approveAmount || isSending) return;
@@ -369,7 +393,11 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
                              text-[#4EEAFF] placeholder:text-[#4EEAFF]/50 
                              focus:outline-none focus:border-[#4EEAFF]/50"
                 />
-                <p className="w-18 text-[#4EEAFF] mt-2">0x666&nbsp;&nbsp;&nbsp; barcoin:38</p>
+                <p className="w-18 text-[#4EEAFF] mt-2">
+                  {account?.address?.slice(0,4)}...{account?.address?.slice(-4)}&nbsp;&nbsp;&nbsp;
+                   barcoin(SUI):{Number(balance?.totalBalance)/10**9}
+                </p>
+
               </div>
             </div>
             <ScrollArea className="h-[calc(100vh-16rem)]">
@@ -584,7 +612,7 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
                                                     </div>
                                                 </div>
                                                 <button
-                                                  onClick={() => claimCoin(0)} // 根据实际合约调整参数
+                                                  onClick={() => claimCoin(0)}
                                                   className="px-3 py-1 bg-[#FFD700] border-2 border-[#B8860B] 
                                                           text-[#8B4513] hover:bg-[#FFC125] transition-colors
                                                           font-pixel text-sm pixel-corners flex items-center gap-1 ml-6"

@@ -3,6 +3,8 @@ import { AUTO, Game } from "phaser";
 import { preloadScene } from "./scenes/preloadScene";
 import TavernScene from "./scenes/tavernScene";
 import { loginScene } from "./scenes/loginScene";
+import DriftBottleScene from "./scenes/DriftBottleScene";
+import BottleDetailScene from "./scenes/BottleDetailScene";
 
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
@@ -28,6 +30,8 @@ const config: Phaser.Types.Core.GameConfig = {
         loginScene,
         preloadScene,
         TavernScene,
+        DriftBottleScene,
+        BottleDetailScene,
     ],
 };
 
