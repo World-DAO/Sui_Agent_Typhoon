@@ -171,6 +171,53 @@ async def chat(request: ChatRequest):
     return StreamingResponse(stream_response(), media_type="application/json")
 
 
+@app.post("/api/chat_no_stream")
+async def chat_no_stream(request: ChatRequest):
+    user_id = request.user_id.lower()
+    content = request.content
+    
+    chat_agent = create_chat_agent()
+    swarm_client = create_swarm_client()
+
+    # get user's analytic cache
+    user_analytic_cache = GlobalUserAnalyticCache.get(user_id, {})
+    user_analytic_cache_str = f"From the chat history, the user is {user_analytic_cache.get('chat_history', 'not found')}; from the sent bottles content, the user is {user_analytic_cache.get('sent_bottles', 'not found')}."
+
+    response = await asyncio.wait_for(
+        run_in_threadpool(
+            run_swarm_in_threadpool,
+            swarm_client,
+            chat_agent,
+            [
+                {
+                    "role": "system",
+                    "content": user_analytic_cache_str + ". Please serve him well."
+                },
+                {
+                    "role": "user",
+                    "content": content
+                }
+            ], 
+            debug=False,
+            stream=False
+        ),
+        timeout=10
+    )
+
+            
+    # # in this case, the user has one message and ai has one message.
+    # user_prompt = content
+    # ai_response = response.messages[-1]["content"]
+
+    # # store chat history to db
+    # await store_chat_history(user_id, "user", user_prompt)
+    # await store_chat_history(user_id, "ai", ai_response)
+
+    # print(response.messages)
+
+    return {"status": "OK", "agent_response": response.messages[-1]["content"]}
+
+
 @app.post("/api/send_tokens")
 async def send_tokens(request: CommonRequest):
     user_id = request.user_id.lower()

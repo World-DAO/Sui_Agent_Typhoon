@@ -9,11 +9,6 @@ from prompt_hub import (
     instructions_for_summary_agent,
 )
 
-from nillion_utils import (
-    fetch_credentials
-)
-import nillion_pack.generate_tokens as generate_tokens
-
 BACKEND_BASE_URL = "http://47.236.128.7:3000"
 
 async def fetch_chat_history(user_id: str, previous_count: int=100) -> Union[List[Dict], None]:
@@ -41,7 +36,7 @@ async def fetch_chat_history(user_id: str, previous_count: int=100) -> Union[Lis
             return None
 
 
-def fetch_sent_bottles(user_id: str) -> Union[List[Dict], None]:
+async def fetch_sent_bottles(user_id: str) -> Union[List[Dict], None]:
     """This function fetches the contents of bottles sent by a given user.
     
         returns:
@@ -55,15 +50,15 @@ def fetch_sent_bottles(user_id: str) -> Union[List[Dict], None]:
                     "created_at": "2025-02-06T15:01:55.000Z"
                 },]
     """
-    # we will got the bottles from nillion
-    generate_tokens.update_config()
-    creds = fetch_credentials()
-    target_items = []
-    for cred in creds:
-        if cred['user_id'].lower() == user_id.lower():
-            target_items.append(cred)
-
-    return target_items
+    backend_sent_api = '/api/sent_bottle_msg'
+    async with httpx.AsyncClient() as client:
+        response = await client.get(BACKEND_BASE_URL + backend_sent_api, params={'user_id': user_id})
+        if response.status_code == 200:
+            sent_bottles = response.json()  
+            if 'success' in sent_bottles and sent_bottles['success']:
+                return sent_bottles['data']
+        else:
+            return None
 
 
 async def fetch_recv_bottles(user_id: str) -> Union[List[Dict], None]:
@@ -101,7 +96,7 @@ async def agent_understand_user(user_id: str) -> Dict[str, str]:
             user_id: str, the wallet address of the user.
     """
     chat_history: List[dict] = await fetch_chat_history(user_id)
-    sent_bottles: List[dict] = fetch_sent_bottles(user_id)
+    sent_bottles: List[dict] = await fetch_sent_bottles(user_id)
 
     chat_history_str = ""
     for item in chat_history:

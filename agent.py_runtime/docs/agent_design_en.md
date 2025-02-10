@@ -66,26 +66,3 @@ The Node runtime is rather simple. It is responsible for handling transactions a
 + `/api/tx/nft`: This endpoint is used to create a new NFT.
 
 Our contract is deployed on testnet, to see our contract implementation, please refer to the `smart_contract` git branch.
-
-## How we use Nillion
-
-To store user's secret data and ensure privacy, we decide not to store them on the backend database, instead we store them on nillion's SecretVault.
-
-To understand how to get hands on with it, please refer to the README.md file in `agent.py_runtime` directory.
-
-To point out, we use nillion's Secret Vault in two places:
-
-1. `fetch_sent_bottles_sync` function for Evaluate Agent, to fetch the user's sent message bottles. See implementation in `function_impl/fn_evaluate.py` file.
-2. `fetch_sent_bottles` function for Chat Agent, to fetch the user's sent message bottles. See implementation in `function_impl/fn_summary.py` file.
-
-To store imformation, we often do it manually: see `2.upload_some_info.py` in `agent.py_runtime/` directory, besides, before the server shuttiing down, we will store all the cached data into the nillion's Secret Vault.
-
-__Why store user's bottles content on nillion's Secret Vault?__
-
-- To ensure privacy, we do not store user's bottles content on the backend database. We do not want to expose user's private data to the backend server. And make user feel safe.
-- Data security: in case that some secret of user's content will be leaked, nillion is the best choice.
-
-__Why not other data, like chat history?__
-
-- The very first point is: The privacy of user's chat history is less important than the privacy of user's bottles content. The user may do not want to share secrets with agent, but they will choose to write secrets in their bottles.
-- The chat history is usually very long, and it is not suitable to store it on the nillion's Secret Vault.

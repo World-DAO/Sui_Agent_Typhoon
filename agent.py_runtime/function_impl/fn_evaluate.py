@@ -7,11 +7,6 @@ import json
 import os
 from openai import OpenAI
 from datetime import datetime, timedelta
-from nillion_utils import (
-    fetch_credentials
-)
-import nillion_pack.generate_tokens as generate_tokens
-
 from prompt_hub import (
     instructions_for_evaluate_agent
 )
@@ -59,17 +54,16 @@ def fetch_sent_bottles_sync(user_id: str) -> Union[List[Dict], None]:
                     "created_at": "2025-02-06T15:01:55.000Z"
                 },]
     """
+    backend_sent_api = '/api/sent_bottle_msg'
     if '/' in user_id:
         user_id = user_id.replace('/', 'x')
-    generate_tokens.update_config()
-    creds = fetch_credentials()
-    valid_creds = []
-    for item in creds:
-        if item['user_id'].lower() == user_id.lower():
-            valid_creds.append(item)
-    if len(valid_creds) == 0:
+    response = requests.get(BACKEND_BASE_URL + backend_sent_api, params={'user_id': user_id})
+    if response.status_code == 200:
+        sent_bottles = response.json()  
+        if 'success' in sent_bottles and sent_bottles['success']:
+            return sent_bottles['data']
+    else:
         return None
-    return valid_creds
 
 
 def grade_chat_history(context_variables: dict, user_id: str) -> str:
