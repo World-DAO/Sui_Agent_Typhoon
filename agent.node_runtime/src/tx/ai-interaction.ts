@@ -33,17 +33,10 @@ const tarvenNFTABI = [
   "function mintNFT(address recipient, string memory tokenURI) external returns (uint256)"
 ];
 
-// 初始化 provider、AI 钱包及合约实例
-const provider = new ethers.JsonRpcProvider(RPC_URL);
-const aiWallet = new ethers.Wallet(AI_PRIVATE_KEY, provider);
-
-const tarvenCoin = new ethers.Contract(TARVENCOIN_ADDRESS, tarvenCoinABI, aiWallet);
-const tarvenNFT = new ethers.Contract(TARVENNFT_ADDRESS, tarvenNFTABI, aiWallet);
-
 /**
  * 调用 TarvenCoin 合约的 faucet 函数
  * @param recipient 接收代币的地址
- * @param amount 代币数量（number 类型，通过 ethers.parseUnits 得到 bigint）
+ * @param amount 代币数量（number 类型，得到 bigint）
  */
 async function callFaucet(recipient: string, amount: number, objid: string, tokenData: {title: string, content: string}) {
 
@@ -127,30 +120,6 @@ async function callMintNFT(recipient: string, tokenData: NFT): Promise<{
 
   return {"status": "success", "txHash": txMintNFT.hash};
 }
-
-async function main() {
-  console.log("AI Wallet address:", await aiWallet.getAddress());
-
-  // recipient 地址
-  const recipient = "0x3a181F605bB12B792a59a6ba132de5B1085B57c8";
-
-  // 示例 1：调用 faucet，铸造 100 个代币（假设代币为 18 位小数）
-  await callFaucet(recipient, 100);
-
-  // 示例 2：调用 mintNFT，传入 NFT 信息（title 和 content）
-  const nftContent: NFT = {
-    title: "Test NFT",
-    content: "这里是一段测试文本，作为 NFT 的内容。"
-  };
-  await callMintNFT(recipient, nftContent);
-}
-
-// main()
-//   .then(() => process.exit(0))
-//   .catch((error) => {
-//     console.error("Error in execution:", error);
-//     process.exit(1);
-//   });
 
 export {
   callFaucet,
