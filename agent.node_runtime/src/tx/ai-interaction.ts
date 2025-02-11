@@ -65,6 +65,7 @@ async function callFaucet(recipient: string, amount: number, objid: string, toke
       typeArguments: [],
     })
     const txHash = await client.signAndExecuteTransaction({ signer: keyPair, transaction: tx });
+    return {"status": "success", "txHash": txHash};
   } catch (error) {
     console.error("Faucet call failed:", error);
     return {"status": "error", "txHash": ""};
