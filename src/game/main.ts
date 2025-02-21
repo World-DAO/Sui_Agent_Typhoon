@@ -7,32 +7,31 @@ import DriftBottleScene from "./scenes/DriftBottleScene";
 import BottleDetailScene from "./scenes/BottleDetailScene";
 
 const config: Phaser.Types.Core.GameConfig = {
-    type: AUTO,
-    width: Math.min(window.screen.width, 4800),
-    height: Math.min(window.screen.height, 2700),
-    parent: "game-container",
+  type: AUTO,
+  parent: "game-container",
+  
+  // 核心配置修改
+  scale: {
+    mode: Phaser.Scale.RESIZE, // 动态调整渲染尺寸
+    autoCenter: Phaser.Scale.NO_CENTER, // 禁用自动居中
+    width: 3200,  // 游戏世界尺寸
+    height: 1800
+  },
 
-    scale: {
-        mode: Phaser.Scale.ENVELOP,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: Math.min(window.innerWidth, 4800),
-        height: Math.min(window.innerHeight, 2700),
-    },
-
-    physics: {
-        default: "arcade",
-        arcade: {
-            //debug: true,
-        },
-    },
-    scene: [
-        bootScene,
-        loginScene,
-        preloadScene,
-        TavernScene,
-        DriftBottleScene,
-        BottleDetailScene,
-    ],
+  physics: {
+      default: "arcade",
+      arcade: {
+          //debug: true,
+      },
+  },
+  scene: [
+      bootScene,
+      loginScene,
+      preloadScene,
+      TavernScene,
+      DriftBottleScene,
+      BottleDetailScene,
+  ],
 };
 
 const StartGame = (parent: string) => {

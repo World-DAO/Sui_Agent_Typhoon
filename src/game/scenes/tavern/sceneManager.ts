@@ -148,11 +148,14 @@ export class SceneManager {
     }
 
     private setupCamera() {
-        const bgWidth = this.scene.data.get("bgWidth");
-        const bgHeight = this.scene.data.get("bgHeight");
-
+        const camera = this.scene.cameras.main
+        camera.setViewport(0, 0, window.innerWidth, window.innerHeight)
+          .setBounds(0, 0, 3200, 1800); // 绑定到地图尺寸
+        // 窗口大小变化监听
+        window.addEventListener('resize', () => {
+          camera.setViewport(0, 0, window.innerWidth, window.innerHeight);
+        });
         const mainCamera = this.scene.cameras.main;
-        mainCamera.setBounds(0, 0, bgWidth, bgHeight);
         mainCamera.startFollow(this.player.sprite, true, 0.09, 0.09, 0, 0);
         mainCamera.setBackgroundColor("#000000");
     }

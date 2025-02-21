@@ -21,52 +21,21 @@ export function WalletModal({ onClose, onGameStart }: WalletModalProps) {
     const [error, setError] = useState<string>("");
 
     return (
-        <div
-            style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                background: "rgba(0, 0, 0, 0.85)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 1000,
-                backdropFilter: "blur(10px)",
-            }}
-        >
-            <div
-                style={{
-                    background: "rgba(20, 20, 20, 0.95)",
-                    padding: "30px",
-                    borderRadius: "12px",
-                    boxShadow: "0 0 10px rgba(0, 255, 255, 0.7)",
-                    textAlign: "center",
-                    width: "400px",
-                    border: "2px solid rgba(0, 255, 255, 0.5)",
-                }}
-            >
-                <h2
-                    style={{
-                        fontSize: "22px",
-                        fontWeight: "bold",
-                        marginBottom: "15px",
-                        color: "#0ff",
-                        textShadow: "0 0 10px #0ff",
-                    }}
-                >
+        <div className="fixed inset-0 flex items-center justify-center z-[1000] bg-black/85 backdrop-blur-[10px]">
+            <div className="w-[400px] bg-[rgba(20,20,20,0.95)] p-[30px] rounded-xl shadow-[0_0_10px_rgba(0,255,255,0.7)] 
+                          text-center border-2 border-[rgba(0,255,255,0.5)]">
+                <h2 className="text-[22px] font-bold mb-[15px] text-[#0ff]">
                     🔮 Select Wallet
                 </h2>
 
                 {/* Wallet List */}
-                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                <ul className="list-none p-0 m-0">
                     {wallets.length > 0 ? (
                         wallets.map((wallet) => {
                             const isConnected = currentWallet && currentWallet.name === wallet.name;
 
                             return (
-                                <li key={wallet.name} style={{ marginBottom: "10px" }}>
+                                <li key={wallet.name} className="mb-[10px]">
                                     <button
                                         onClick={() => {
                                             if (isConnected) {
@@ -85,19 +54,11 @@ export function WalletModal({ onClose, onGameStart }: WalletModalProps) {
                                                 }
                                             );
                                         }}
-                                        style={{
-                                            width: "100%",
-                                            padding: "10px",
-                                            border: isConnected ? "2px solid #0f0" : "2px solid #ff0090",
-                                            backgroundColor: isConnected ? "rgba(0, 255, 0, 0.2)" : "rgba(255, 0, 144, 0.2)",
-                                            color: isConnected ? "#0f0" : "#ff0090",
-                                            fontSize: "14px",
-                                            fontWeight: "bold",
-                                            cursor: "pointer",
-                                            borderRadius: "5px",
-                                            textShadow: isConnected ? "0 0 5px #0f0" : "0 0 5px #ff0090",
-                                            transition: "all 0.3s ease",
-                                        }}
+                                        className={`w-full p-[10px] text-[14px] font-bold rounded cursor-pointer transition-all duration-300
+                                                  ${isConnected 
+                                                    ? 'border-2 border-[#0f0] bg-[rgba(0,255,0,0.2)] text-[#0f0] shadow-[0_0_5px_#0f0]'
+                                                    : 'border-2 border-[#ff0090] bg-[rgba(255,0,144,0.2)] text-[#ff0090] shadow-[0_0_5px_#ff0090]'
+                                                  }`}
                                     >
                                         {isConnected
                                             ? `✅ ${currentWallet?.accounts?.[0]?.address.slice(0, 6)}...`
@@ -108,20 +69,9 @@ export function WalletModal({ onClose, onGameStart }: WalletModalProps) {
                                     {isConnected && (
                                         <button
                                             onClick={() => disconnect()}
-                                            style={{
-                                                marginTop: "5px",
-                                                width: "100%",
-                                                padding: "8px",
-                                                border: "2px solid #ff4500",
-                                                backgroundColor: "rgba(255, 69, 0, 0.2)",
-                                                color: "#ff4500",
-                                                fontSize: "14px",
-                                                fontWeight: "bold",
-                                                cursor: "pointer",
-                                                borderRadius: "5px",
-                                                textShadow: "0 0 5px #ff4500",
-                                                transition: "all 0.3s ease",
-                                            }}
+                                            className="w-full mt-[5px] p-[8px] text-[14px] font-bold rounded cursor-pointer
+                                                     border-2 border-[#ff4500] bg-[rgba(255,69,0,0.2)] text-[#ff4500]
+                                                     shadow-[0_0_5px_#ff4500] transition-all duration-300"
                                         >
                                             ❌ Disconnect
                                         </button>
@@ -130,14 +80,7 @@ export function WalletModal({ onClose, onGameStart }: WalletModalProps) {
                             );
                         })
                     ) : (
-                        <p
-                            style={{
-                                color: "#ff0090",
-                                fontSize: "14px",
-                                marginTop: "10px",
-                                textShadow: "0 0 5px #ff0090",
-                            }}
-                        >
+                        <p className="text-[#ff0090] text-[14px] mt-[10px] shadow-[0_0_5px_#ff0090]">
                             ❌ No wallet detected. Please install Sui Wallet
                         </p>
                     )}
@@ -152,20 +95,12 @@ export function WalletModal({ onClose, onGameStart }: WalletModalProps) {
                         }
                     }}
                     disabled={!currentWallet}
-                    style={{
-                        marginTop: "20px",
-                        width: "100%",
-                        padding: "12px",
-                        backgroundColor: currentWallet ? "rgba(0, 255, 255, 0.5)" : "rgba(128, 128, 128, 0.5)",
-                        color: currentWallet ? "#0ff" : "#888",
-                        border: "2px solid #0ff",
-                        borderRadius: "5px",
-                        cursor: currentWallet ? "pointer" : "not-allowed",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        textShadow: "0 0 8px #0ff",
-                        transition: "all 0.3s ease",
-                    }}
+                    className={`w-full mt-[20px] p-[12px] text-[16px] font-bold rounded transition-all duration-300
+                              border-2 border-[#0ff] 
+                              ${currentWallet 
+                                ? 'bg-[rgba(0,255,255,0.5)] text-[#0ff] cursor-pointer shadow-[0_0_8px_#0ff]'
+                                : 'bg-[rgba(128,128,128,0.5)] text-[#888] cursor-not-allowed'
+                              }`}
                 >
                     🎮 Enter Game
                 </button>
