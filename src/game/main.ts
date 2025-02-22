@@ -3,8 +3,6 @@ import { AUTO, Game } from "phaser";
 import { preloadScene } from "./scenes/preloadScene";
 import TavernScene from "./scenes/tavernScene";
 import { loginScene } from "./scenes/loginScene";
-import DriftBottleScene from "./scenes/DriftBottleScene";
-import BottleDetailScene from "./scenes/BottleDetailScene";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: AUTO,
@@ -14,8 +12,8 @@ const config: Phaser.Types.Core.GameConfig = {
   scale: {
     mode: Phaser.Scale.RESIZE, // 动态调整渲染尺寸
     autoCenter: Phaser.Scale.NO_CENTER, // 禁用自动居中
-    width: 3200,  // 游戏世界尺寸
-    height: 1800
+    width: 1600,  // 游戏世界尺寸
+    height: 900
   },
 
   physics: {
@@ -29,8 +27,6 @@ const config: Phaser.Types.Core.GameConfig = {
       loginScene,
       preloadScene,
       TavernScene,
-      DriftBottleScene,
-      BottleDetailScene,
   ],
 };
 

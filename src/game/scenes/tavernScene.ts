@@ -19,8 +19,8 @@ export default class TavernScene extends Phaser.Scene {
         // 设置场景尺寸数据
         // this.data.set('bgWidth', 550);
         // this.data.set('bgHeight', 1195);
-        this.data.set("bgWidth", Math.max(window.innerWidth, 3200));
-        this.data.set("bgHeight", Math.max(window.innerHeight, 1800));
+        this.data.set("bgWidth", Math.max(window.innerWidth, 1600));
+        this.data.set("bgHeight", Math.max(window.innerHeight, 900));
 
         // 初始化场景管理器
         this.sceneManager = new SceneManager(this);

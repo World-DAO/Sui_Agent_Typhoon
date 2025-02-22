@@ -52,6 +52,7 @@ export class SceneManager {
                 // Only pause if not already paused
                 this.scene.scene.pause();
                 this.scene.scene.launch("DriftBottleScene");
+                EventBus.emit('switch-driftbottle-scene');
                 //EventBus.emit('switch-driftbottle-scene');
             }
         });
@@ -148,16 +149,26 @@ export class SceneManager {
     }
 
     private setupCamera() {
-        const camera = this.scene.cameras.main
-        camera.setViewport(0, 0, window.innerWidth, window.innerHeight)
-          .setBounds(0, 0, 3200, 1800); // 绑定到地图尺寸
-        // 窗口大小变化监听
-        window.addEventListener('resize', () => {
-          camera.setViewport(0, 0, window.innerWidth, window.innerHeight);
-        });
-        const mainCamera = this.scene.cameras.main;
-        mainCamera.startFollow(this.player.sprite, true, 0.09, 0.09, 0, 0);
-        mainCamera.setBackgroundColor("#000000");
+      const MAP_WIDTH = this.scene.data.get("bgWidth"); // 明确使用地图常量
+      const MAP_HEIGHT = this.scene.data.get("bgHeight");
+      
+      const mainCamera = this.scene.cameras.main
+          .setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)
+          .startFollow(this.player.sprite, true, 0.09, 0.09)
+          .setZoom(1) // 明确禁用缩放
+          .setBackgroundColor("#000000");
+      // 动态调整视口
+      const updateViewport = () => {
+          mainCamera.setViewport(
+              0, 
+              0, 
+              Math.min(window.innerWidth, MAP_WIDTH), // 视口不超过地图尺寸
+              Math.min(window.innerHeight, MAP_HEIGHT)
+          );
+      };
+      
+      window.addEventListener('resize', updateViewport);
+      updateViewport();
     }
 
     public handlePointerDown(
@@ -199,8 +210,6 @@ export class SceneManager {
         moveController?.startPath(result);
     }
     private drawGrid() {
-        const bgWidth = 1195;
-        const bgHeight = 550;
         // const bgWidth = 550;
         // const bgHeight = 1195;
         // 添加网格显示
