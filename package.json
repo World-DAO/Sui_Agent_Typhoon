@@ -28,7 +28,7 @@
         "build-nolog": "next build"
     },
     "dependencies": {
-        "@mysten/dapp-kit": "^0.14.49",
+        "@mysten/dapp-kit": "^0.14.50",
         "@mysten/sui": "^1.21.2",
         "@noble/ed25519": "^2.2.3",
         "@noble/hashes": "^1.7.1",

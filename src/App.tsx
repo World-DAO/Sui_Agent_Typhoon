@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { IRefPhaserGame, PhaserGame } from './game/PhaserGame';
-import { Mail } from "@/components/mail"
 
 function App()
 {
@@ -15,7 +14,6 @@ function App()
     return (
         <div id="app">
             <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
-            <Mail />
         </div>
     )
 }

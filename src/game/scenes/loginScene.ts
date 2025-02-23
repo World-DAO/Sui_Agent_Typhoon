@@ -49,7 +49,7 @@ export class loginScene extends Scene {
 
         // Add title with elegant style
         const title = this.add
-            .text(fullWidth / 2, fullHeight * 0.4, "Welcome to BEFORELIFE", {
+            .text(fullWidth / 2, fullHeight * 0.4, "Welcome to MOONCL", {
                 fontSize: "48px",
                 color: "#ffffff",
                 fontFamily: "Georgia, serif",
@@ -174,7 +174,6 @@ export class loginScene extends Scene {
         // Listen for login response
         EventBus.on("phaser_loginResponse", (response: LoginResponse) => {
             if (response.success) {
-                console.log("success:", response.data);
                 // Store user info in game registry
                 this.registry.set("userData", response.data);
                 // Delay 1 second before transition to let user see success message
