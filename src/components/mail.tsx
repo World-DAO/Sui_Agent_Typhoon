@@ -11,6 +11,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient, useSuiClientQuery } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { PACKAGE_ID } from "@/components/config/suiConstant";
+import { StoryList } from "./StoryList";
 
 // Mock data for bar stories (stories received from others)
 const MOCK_BAR_STORIES: Story[] = [
@@ -381,60 +382,18 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
 
         <div className="flex flex-1 overflow-hidden">
           {/* Left panel - Story List */}
-          <div className="w-[400px] border-r-4 border-[#4EEAFF] bg-[#2A4C54]">
-            <div className="p-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-[#4EEAFF]/70" />
-                <input
-                  placeholder="Search stories..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#1A1A1F] border-2 border-[#4A4A4F] px-9 py-2 
-                             text-[#4EEAFF] placeholder:text-[#4EEAFF]/50 
-                             focus:outline-none focus:border-[#4EEAFF]/50"
-                />
-                <p className="w-18 text-[#4EEAFF] mt-2">
-                  {account?.address?.slice(0,4)}...{account?.address?.slice(-4)}&nbsp;&nbsp;&nbsp;
-                   barcoin(SUI):{Number(balance?.totalBalance)/10**9}
-                </p>
-
-              </div>
-            </div>
-            <ScrollArea className="h-[calc(100vh-16rem)]">
-
-
-              <div className="px-4 space-y-2">
-                {filteredStories.map((story) => (
-                  <div
-                    key={story.id}
-                    className={cn(
-                      "cursor-pointer space-y-2 p-3 border-2",
-                      "transition-colors pixel-corners",
-                      selectedStory?.id === story.id 
-                        ? "bg-[#3A3A3F] border-[#4EEAFF]" 
-                        : "bg-[#2A2A2F] border-[#4A4A4F] hover:border-[#4EEAFF]/50"
-                    )}
-                    onClick={() => handleStorySelect(story)}
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="space-y-1">
-                        <h4 className="font-medium leading-none text-[#4EEAFF]">
-                          {story.author_address.slice(0, 6)}...{story.author_address.slice(-4)}
-                        </h4>
-                        <p className="text-sm text-[#4EEAFF]/70">{story.title}</p>
-                      </div>
-                      <div className="text-xs text-[#4EEAFF]/50">
-                        {new Date(story.created_at).toLocaleString()}
-                      </div>
-                    </div>
-                    <p className="text-xs text-[#4EEAFF]/70 line-clamp-2">
-                      {story.story_content}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
+          <StoryList
+            stories={stories}
+            selectedStory={selectedStory}
+            onSelect={setSelectedStory}
+            isMyStories={isMyStories}
+            setReplies={setReplies}
+            setReplyGroups={setReplyGroups}
+            setRecipient={setRecipient}
+            account={account}
+            balance={Number(balance?.totalBalance)/10**9}
+            setSearchQuery={setSearchQuery}
+          />
 
           {/* Right panel - Story View/Create */}
           <div className="flex-1 flex flex-col bg-[#2A4C54]">
