@@ -6,6 +6,7 @@ import { useGet } from "@/hooks/useGet";
 import { WalletModal } from "@/components/WalletModal";
 import { useCurrentWallet } from "@mysten/dapp-kit";
 import ColyseusClient from "@/game/utils/ColyseusClient";
+import { getSuiBalance } from "./sui";
 
 type TestResponse = {
   success: boolean;
@@ -93,9 +94,11 @@ export function ReactPhaserBridge() {
       console.log("loginResponse:", loginResponse);
 
       if (loginResponse.success) {
+        const suiBalance = await getSuiBalance(address);
         EventBus.emit("phaser_loginResponse", {
           success: true,
           data: {
+            suiBalance: suiBalance,
             walletName: currentWallet.name,
             walletAddress: address,
             token: loginResponse.token, // JWT Token

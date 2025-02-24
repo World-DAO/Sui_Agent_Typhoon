@@ -113,12 +113,12 @@ export class BarmanInteraction {
     public isContained(x: number, y: number): boolean {
         // 检查是否点击了对话框
         const inDialog = this.dialog?.isContained(x, y) || false;
+        return inDialog
+    }
 
-        // 检查是否点击了酒保
+    public isContainedBarman(x: number, y: number): boolean {
         const barmanBounds = this.barman.sprite.getBounds();
         const inBarman = barmanBounds.contains(x, y);
-
-        // 如果正在显示对话或选项，或者点击了酒保，都算"占据屏幕"
-        return inDialog || inBarman;
+        return inBarman;
     }
 }

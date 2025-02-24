@@ -2,7 +2,6 @@ import { Scene } from "phaser";
 
 export class preloadScene extends Scene {
     private progressBar!: Phaser.GameObjects.Graphics;
-    private progressBox!: Phaser.GameObjects.Graphics;
     private percentText!: Phaser.GameObjects.Text;
     private loadingText!: Phaser.GameObjects.Text;
     private assetText!: Phaser.GameObjects.Text;
@@ -133,21 +132,22 @@ export class preloadScene extends Scene {
         // 加载loading动画资源
         // 资源加载
         // this.load.image('tavern_bg', 'img/newbar.png');
-        this.load.image("tavern_bg", "img/backgroundHorizontal.jpg");;
+        this.load.image("tavern_bg", "img/backgroundHorizontal.jpg");
         this.load.spritesheet("player", "animation/move.png", {
             frameWidth: 280,
             frameHeight: 550,
         });
         this.load.image("user", "animation/david.png");
         this.load.image("barwoman", "animation/lucy.png");
-        this.load.image('driftbottle', 'img/driftbottle.png');
+        this.load.image("driftbottle", "img/driftbottle.png");
         this.load.audio("theme", [
             "audio/oedipus_wizball_highscore.ogg",
             "audio/oedipus_wizball_highscore.mp3",
         ]);
-
+        this.load.image("bar_menu", "img/bar_menu.png");
+        this.load.image("bar_bottle", "img/bar_bottle.png");
         this.load.image("wizball", "img/wizball.png");
-
+        this.load.image("sui_logo", "img/sui_logo.png");
         this.registry.set("gridSize", 50);
         // debugger;
         const gridArray = new Array(16)

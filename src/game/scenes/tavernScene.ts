@@ -51,8 +51,13 @@ export default class TavernScene extends Phaser.Scene {
 
     private setupUIAndEvents() {
         this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-            if (this.barmanInteraction?.isContained(pointer.x, pointer.y)) {
+            if (this.barmanInteraction?.isContained(pointer.x, pointer.y) ||
+          this.barmanInteraction?.isContainedBarman(pointer.worldX, pointer.worldY)) {
                 // 如果点击了酒保或对话框，不处理移动
+                return;
+            }
+            
+            if (this.sceneManager.isContained(pointer.worldX, pointer.worldY)) {
                 return;
             }
             this.sceneManager.handlePointerDown(

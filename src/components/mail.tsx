@@ -148,6 +148,9 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
       );
   }
 
+  const isClaim = async (id: string) => {
+    
+  }
   const claimCoin = async (id: string) => {
     const tx = new Transaction();
     const obj = tx.object(id);
@@ -218,7 +221,6 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
 
   const handleSendReply = async () => {
     if (!selectedStory || !replyText.trim()) return;
-    await sendCoin()
     try {
         const success = await ColyseusClient.replyToStory(selectedStory.id, replyText);
         if (success) {
