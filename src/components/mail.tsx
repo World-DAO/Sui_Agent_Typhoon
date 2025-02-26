@@ -2,77 +2,15 @@
 
 import * as React from "react"
 import { useEffect, useState } from 'react';
-import { Search, X, Send } from "lucide-react"
+import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { EventBus } from '@/game/EventBus';
 import ColyseusClient, { Story, Reply } from '@/game/utils/ColyseusClient';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient, useSuiClientQuery } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { PACKAGE_ID } from "@/components/config/suiConstant";
 import { StoryList } from "./StoryList";
-
-// Mock data for bar stories (stories received from others)
-const MOCK_BAR_STORIES: Story[] = [
-  {
-    id: 1,
-    author_address: "0x1234567890abcdef",
-    title: "A Night at the Tavern",
-    story_content: "Last night at the tavern was magical. The bard's songs echoed through the halls, and adventurers from all corners shared their tales...",
-    created_at: new Date("2024-03-10T20:00:00Z")
-  },
-  {
-    id: 2,
-    author_address: "0xabcdef1234567890",
-    title: "The Mysterious Merchant",
-    story_content: "A peculiar merchant visited today, carrying items that seemed to glow with an otherworldly light...",
-    created_at: new Date("2024-03-11T15:30:00Z")
-  }
-];
-
-// Mock data for my stories (stories written by the user)
-const MOCK_MY_STORIES: Story[] = [
-  {
-    id: 3,
-    author_address: "0xYourWalletAddress", // This should match the user's wallet
-    title: "My First Adventure",
-    story_content: "Today I embarked on my first quest in this magical realm. The tavern keeper gave me a mysterious map...",
-    created_at: new Date("2024-03-12T10:00:00Z")
-  },
-  {
-    id: 4,
-    author_address: "0xYourWalletAddress",
-    title: "Strange Encounters",
-    story_content: "Met a group of wandering minstrels who spoke of ancient treasures hidden beneath the tavern...",
-    created_at: new Date("2024-03-13T14:20:00Z")
-  }
-];
-
-const MOCK_REPLIES: Reply[] = [
-  {
-    id: 1,
-    story_id: 1,
-    parent_reply_id: 0,
-    author_address: "0xdef1234567890abc",
-    reply_content: "I was there too! The bard's performance was unforgettable.",
-    created_at: new Date("2024-03-10T21:00:00Z")
-  },
-  {
-    id: 2,
-    story_id: 1,
-    parent_reply_id: 1,
-    author_address: "0x7890abcdef123456",
-    reply_content: "Did anyone catch the name of that song about the dragon?",
-    created_at: new Date("2024-03-10T22:15:00Z")
-  }
-];
-
-// Add ReplyGroup interface
-interface ReplyGroup {
-    address: string;
-    replies: Reply[];
-}
+import { StoryPanel } from "./StoryPanel";
 
 export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
@@ -97,17 +35,6 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [isSending, setIsSending] = useState(false);
   const [claimStatus, setClaimStatus] = useState<string>("");
 
-  // const { data: balance } = useSuiClientQuery(
-  //   "getBalance",
-  //   {
-  //     owner: account?.address || "",
-  //     coinType: `${PACKAGE_ID}::bar::BAR`
-  //   },
-  //   {
-  //     enabled: !!account?.address,
-  //     refetchInterval: 3000
-  //   }
-  // );
   const { data: balance } = useSuiClientQuery(
     "getBalance",
     {
@@ -170,17 +97,10 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
         : await ColyseusClient.getAllStories();
       
       console.log(`Fetched ${isMyStoriesView ? 'my' : 'all'} stories:`, fetchedStories);
-      
-      // Only use mock data if no stories returned
-      if (fetchedStories && fetchedStories.length > 0) {
-        setStories(fetchedStories);
-      } else {
-        // Fallback to mock data only if no real data
-        setStories(isMyStoriesView ? MOCK_MY_STORIES : MOCK_BAR_STORIES);
-      }
+      setStories(fetchedStories || []);
     } catch (error) {
       console.error('Failed to fetch stories:', error);
-      setStories(isMyStoriesView ? MOCK_MY_STORIES : MOCK_BAR_STORIES);
+      setStories([]);
     } finally {
       setLoading(false);
     }
@@ -398,280 +318,29 @@ export function Mail({ className }: React.HTMLAttributes<HTMLDivElement>) {
           />
 
           {/* Right panel - Story View/Create */}
-          <div className="flex-1 flex flex-col bg-[#2A4C54]">
-            {isWritingStory ? (
-              <div className="p-8">
-                <div className="mx-auto max-w-3xl">
-                  <div className="bg-[#1E1B2D] border-4 border-[#4EEAFF] p-6 pixel-corners space-y-4">
-                    <input
-                      type="text"
-                      value={newStoryTitle}
-                      onChange={(e) => setNewStoryTitle(e.target.value)}
-                      placeholder="Write your title here..."
-                      onKeyDown={handleKeyDown}
-                      className="w-full bg-[#2A2A2F] border-2 border-[#4A4A4F] p-3 
-                               text-[#4EEAFF] placeholder:text-[#4EEAFF]/50 
-                               focus:outline-none focus:border-[#4EEAFF]/50"
-                    />
-                    <textarea
-                      value={newStoryContent}
-                      onChange={(e) => setNewStoryContent(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      placeholder="Write your story here..."
-                      className="w-full bg-[#2A2A2F] border-2 border-[#4A4A4F] p-3 h-[50vh] 
-                               text-[#4EEAFF] placeholder:text-[#4EEAFF]/50 
-                               focus:outline-none focus:border-[#4EEAFF]/50 resize-none"
-                    />
-                    <div className="flex justify-end gap-4">
-                      <button
-                        onClick={() => setIsWritingStory(false)}
-                        className="px-4 py-2 bg-[#2A2A2F] border-2 border-[#4A4A4F]
-                                 text-[#4EEAFF] hover:bg-[#3A3A3F] transition-colors
-                                 font-pixel text-sm pixel-corners"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleCreateStory}
-                        disabled={!newStoryTitle.trim() || !newStoryContent.trim()}
-                        className="px-4 py-2 bg-[#2A2A2F] border-2 border-[#4EEAFF]
-                                 text-[#4EEAFF] hover:bg-[#9D5BDE] transition-colors
-                                 disabled:opacity-50 disabled:cursor-not-allowed
-                                 font-pixel text-sm pixel-corners"
-                      >
-                        Publish Story
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : selectedStory ? (
-              <ScrollArea className="flex-1">
-                <div className="p-8">
-                  <div className="mx-auto max-w-3xl space-y-6">
-                    {/* Original Story */}
-                    <div className="bg-[#1E1B2D] border-4 border-[#4EEAFF] pixel-corners">
-                      <Accordion type="single" collapsible>
-                        <AccordionItem value="item-1" className="border-0">
-                          <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                            <div className="flex items-center justify-between w-full">
-                              <h3 className="font-semibold text-[#4EEAFF]">{selectedStory.title}</h3>
-                              <span className="text-sm text-[#4EEAFF]/50">
-                                {new Date(selectedStory.created_at).toLocaleString()}
-                              </span>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <div className="px-6 pb-4">
-                              <div className="text-sm text-[#4EEAFF]/70">
-                                From: {selectedStory.author_address.slice(0, 6)}...{selectedStory.author_address.slice(-4)}
-                              </div>
-                              <div className="mt-4 text-[#4EEAFF]/90 whitespace-pre-wrap">
-                                {selectedStory.story_content}
-                              </div>
-                              {/* Add Action Buttons */}
-                              <div className="flex justify-end gap-2 mt-4">
-                                {/* 代币操作区域 */}
-
-                                {/* 简化后的 Claim 按钮 */}
-                                
-
-                                {/* 原有的 Like 按钮保持不变 */}
-                                <button
-                                    onClick={handleSendWhiskey}
-                                    className="px-3 py-1 bg-[#722F37] border-2 border-[#4EEAFF] 
-                                            text-[#4EEAFF] hover:bg-[#9D5BDE] transition-colors
-                                            font-pixel text-sm pixel-corners flex items-center gap-1"
-                                >
-                                    <span className="text-lg">🍷</span>
-                                    Like
-                                </button>
-                              </div>
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </div>
-
-                    {/* Conversation Thread */}
-                    {isMyStories ? (
-                        <div className="space-y-4">
-                            {Object.entries(replyGroups).map(([addressPair, replies]) => (
-                                <div key={addressPair} className="bg-[#1E1B2D] border-4 border-[#4EEAFF] pixel-corners">
-                                    <Accordion type="single" collapsible>
-                                        <AccordionItem value="item-1" className="border-0">
-                                            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                                                <div className="flex items-center justify-between w-full">
-                                                    <h3 className="font-semibold text-[#4EEAFF]">
-                                                        Conversation with: {addressPair.split('-')[1].slice(0, 6)}...{addressPair.split('-')[1].slice(-4)}
-                                                    </h3>
-                                                </div>
-                                            </AccordionTrigger>
-                                            <AccordionContent>
-                                                <div className="px-6 pb-4 space-y-4">
-                                                    {replies.map((reply) => (
-                                                        <div key={reply.id} className="bg-[#2A2A2F] p-4 rounded">
-                                                            <div className="text-sm text-[#4EEAFF]/70">
-                                                                {new Date(reply.created_at).toLocaleString()}
-                                                            </div>
-                                                            <div className="mt-2 text-[#4EEAFF]/90 whitespace-pre-wrap">
-                                                                {reply.reply_content}
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                    {/* Reply input for this conversation */}
-                                                    <div className="mt-4">
-                                                        <textarea 
-                                                            value={replyText}
-                                                            onChange={(e) => setReplyText(e.target.value)}
-                                                            placeholder="Reply to this conversation..."
-                                                            className="w-full bg-[#2A2A2F] border-2 border-[#4A4A4F] p-3
-                                                                     text-[#4EEAFF] placeholder:text-[#4EEAFF]/50 
-                                                                     focus:outline-none focus:border-[#4EEAFF]/50 resize-none"
-                                                        />
-                                                        <div className="flex justify-end mt-2">
-                                                            <button
-                                                                onClick={handleSendReply}
-                                                                className="px-3 py-1 bg-[#722F37] border-2 border-[#4EEAFF]
-                                                                         text-[#4EEAFF] hover:bg-[#9D5BDE] transition-colors
-                                                                         font-pixel text-sm pixel-corners"
-                                                            >
-                                                                Reply
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </AccordionContent>
-                                        </AccordionItem>
-                                    </Accordion>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {replies.map((reply) => (
-                                <div key={reply.id} className="bg-[#1E1B2D] border-4 border-[#4EEAFF] pixel-corners">
-                                    <Accordion type="single" collapsible>
-                                        <AccordionItem value="item-1" className="border-0">
-                                            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                                                <div className="flex items-center justify-between w-full">
-                                                    <h3 className="font-semibold text-[#4EEAFF]">
-                                                        {reply.author_address === selectedStory.author_address ? "Author's Reply" : "Reply"}
-                                                    </h3>
-                                                    <span className="text-sm text-[#4EEAFF]/50">
-                                                        {new Date(reply.created_at).toLocaleString()}
-                                                    </span>
-                                                </div>
-                                            </AccordionTrigger>
-                                            <AccordionContent>
-                                                <div className="px-6 pb-4">
-                                                    <div className="text-sm text-[#4EEAFF]/70">
-                                                        From: {reply.author_address.slice(0, 6)}...{reply.author_address.slice(-4)}
-                                                    </div>
-                                                    <div className="mt-4 text-[#4EEAFF]/90 whitespace-pre-wrap">
-                                                        {reply.reply_content}
-                                                    </div>
-                                                </div>
-                                                <button
-                                                  onClick={() => claimCoin("3")}
-                                                  className="px-3 py-1 bg-[#FFD700] border-2 border-[#B8860B] 
-                                                          text-[#8B4513] hover:bg-[#FFC125] transition-colors
-                                                          font-pixel text-sm pixel-corners flex items-center gap-1 ml-6"
-                                              >
-                                                  <div className="w-4 h-4 relative">
-                                                      <div className="absolute inset-0 rounded-full bg-[#FFD700] border-2 border-[#B8860B]" />
-                                                      <div className="absolute inset-[25%] text-[8px] font-bold text-[#B8860B]">$</div>
-                                                  </div>
-                                                  Claim
-                                              </button>
-                                            </AccordionContent>
-                                        </AccordionItem>
-                                    </Accordion>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Reply Box - Only show for Bar Stories */}
-                    {!isMyStories && (
-                        <div className="bg-[#1E1B2D] border-4 border-[#4EEAFF] pixel-corners">
-                            <Accordion type="single" collapsible defaultValue="reply">
-                                <AccordionItem value="reply" className="border-0">
-                                    <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                                        <div className="flex items-center justify-between w-full">
-                                            <h3 className="font-semibold text-[#4EEAFF]">Write Reply</h3>
-                                            <span className="text-sm text-[#4EEAFF]/50">
-                                                {new Date().toLocaleString()}
-                                            </span>
-                                        </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent>
-                                        <div className="px-6 pb-4">
-                                            <textarea 
-                                                value={replyText}
-                                                onChange={(e) => setReplyText(e.target.value)}
-                                                onKeyDown={handleKeyDown}
-                                                placeholder="Write your reply here..."
-                                                className="w-full bg-[#2A2A2F] border-2 border-[#4A4A4F] p-3 h-[50vh] 
-                                                        text-[#4EEAFF] placeholder:text-[#4EEAFF]/50 
-                                                        focus:outline-none focus:border-[#4EEAFF]/50 resize-none mt-4"
-                                            />
-                                            <div className="flex justify-end mt-4">
-                                              <div className="flex items-center gap-2 mr-4">
-                                                <p className="w-10 text-[#4EEAFF]">coin</p>
-                                                  <input
-                                                      type="number"
-                                                      value={approveAmount}
-                                                      onChange={(e) => setApproveAmount(Number(e.target.value))}
-                                                      className="w-24 bg-[#2A2A2F] border-2 border-[#4A4A4F] px-2 py-1
-                                                              text-[#4EEAFF] placeholder:text-[#4EEAFF]/50 
-                                                              focus:outline-none focus:border-[#4EEAFF]/50"
-                                                      placeholder="Amount"
-                                                      min="0"
-                                                  />
-                                              </div>
-                                                <button
-                                                    onClick={() => handleSendReply()}
-                                                    disabled={!replyText.trim()}
-                                                    className="px-4 py-2 bg-[#2A2A2F] border-2 border-[#4EEAFF]
-                                                            text-[#4EEAFF] hover:bg-[#9D5BDE] transition-colors
-                                                            disabled:opacity-50 disabled:cursor-not-allowed
-                                                            font-pixel text-sm pixel-corners"
-                                                >
-                                                    Send Reply
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-                            </Accordion>
-                        </div>
-                    )}
-
-                    {/* 在 UI 中显示接收者信息 */}
-                    {selectedStory && (
-                        <div className="mb-4">
-                            <h3 className="text-lg font-semibold text-[#4EEAFF]">
-                                To: {recipient.slice(0, 6)}...{recipient.slice(-4)}
-                            </h3>
-                        </div>
-                    )}
-
-                    {/* 在 UI 中添加状态提示 */}
-                    {claimStatus && (
-                        <div className="text-sm text-[#4EEAFF]">
-                            {claimStatus}
-                        </div>
-                    )}
-                  </div>
-                </div>
-              </ScrollArea>
-            ) : (
-              <div className="flex h-full items-center justify-center">
-                <p className="text-[#4EEAFF]/50 font-pixel">Select a story to read</p>
-              </div>
-            )}
-          </div>
+          <StoryPanel
+        isWritingStory={isWritingStory}
+        selectedStory={selectedStory}
+        newStoryTitle={newStoryTitle}
+        newStoryContent={newStoryContent}
+        replyText={replyText}
+        replies={replies}
+        replyGroups={replyGroups}
+        isMyStories={isMyStories}
+        recipient={recipient}
+        claimStatus={claimStatus}
+        approveAmount={approveAmount}
+        setNewStoryTitle={setNewStoryTitle}
+        setNewStoryContent={setNewStoryContent}
+        setReplyText={setReplyText}
+        setIsWritingStory={setIsWritingStory}
+        setApproveAmount={setApproveAmount}
+        handleKeyDown={handleKeyDown}
+        handleCreateStory={handleCreateStory}
+        handleSendReply={handleSendReply}
+        handleSendWhiskey={handleSendWhiskey}
+        claimCoin={claimCoin}
+      />
         </div>
       </div>
     </div>
