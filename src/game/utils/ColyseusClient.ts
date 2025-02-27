@@ -1,8 +1,8 @@
 import { Client, Room } from "colyseus.js";
 
-//const COLYSEUS_SERVER = "https://ethernet-heath-tampa-runtime.trycloudflare.com";
+const COLYSEUS_SERVER = "https://ethernet-heath-tampa-runtime.trycloudflare.com";
 //const COLYSEUS_SERVER = "ws://47.236.128.7:2567";
-const COLYSEUS_SERVER = "ws://localhost:2567";
+//const COLYSEUS_SERVER = "ws://localhost:2567";
 
 export interface Story {
     id: number;
