@@ -3,9 +3,9 @@ import { MapSchema, Schema, type } from "@colyseus/schema";
 import { StoryService } from "../services/storyServices";
 import { UserService } from "../services/userService";
 import { ReplyService } from "../services/replyService";
-import { ethers } from "ethers";
-import { generateJWT, recoverETHAddress, verifyJWT, verifySuiSignature } from "../utils/jwtUtils";
+import { generateJWT, verifyJWT, verifySuiSignature } from "../utils/jwtUtils";
 import { getStoryById } from "../database/storyDB";
+import crypto from "crypto";
 
 class Player extends Schema {
   @type("string")
@@ -79,7 +79,7 @@ export class TavernRoom extends Room<TavernState> {
    * @returns 用户地址或 null
    */
   private authenticate(client: Client): string | null {
-    const token = client.auth.jwt; // 假设前端在连接时发送 JWT
+    const token = client.auth.jwt;
     if (!token) {
       client.send("error", { message: "No JWT provided." });
       return null;
@@ -104,8 +104,8 @@ export class TavernRoom extends Room<TavernState> {
       return;
     }
 
-    // 生成一个随机的挑战消息（nonce）
-    const challenge = ethers.hexlify(ethers.randomBytes(32));
+    // 生成一个随机的挑战消息
+    const challenge = Buffer.from(crypto.randomBytes(32)).toString('hex');
     // 存储挑战消息，关联到客户端的 sessionId
     this.state.loginChallenges.set(client.sessionId, challenge);
     const player = new Player();
@@ -121,14 +121,11 @@ export class TavernRoom extends Room<TavernState> {
     * 处理用户签名验证请求，生成 JWT
     */
   async handleLoginSignature(client: Client, data: any) {
-    const { signature } = data;
-    const challenge = this.state.loginChallenges.get(client.sessionId);
-
+    const { signature, challenge } = data;
     if (!challenge) {
       client.send("loginResponse", { success: false, reason: "No challenge found. Please initiate login again." });
       return;
     }
-
     // 获取用户地址
     const address = this.state.players.get(client.sessionId)?.address;
     if (!address) {
@@ -137,16 +134,11 @@ export class TavernRoom extends Room<TavernState> {
     }
 
     try {
-      // ether 验证签名
-      // const recoveredAddress = recoverETHAddress(challenge, signature);
-      // if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
-      //   throw new Error("Signature verification failed.");
-      // }
-
       // sui 验证签名
+      console.log("address:", address);
       console.log("challenge:", challenge);
       console.log("signature:", signature);
-      if (await verifySuiSignature(challenge, signature) === false) {
+      if (await verifySuiSignature(address, challenge, signature) === false) {
         throw new Error("Signature verification failed.");
       }
 
@@ -161,7 +153,6 @@ export class TavernRoom extends Room<TavernState> {
       client.send("loginResponse", { success: true, token });
       // 清除已使用的挑战消息
       this.state.loginChallenges.delete(client.sessionId);
-
     } catch (error: any) {
       client.send("loginResponse", { success: false, reason: error.message });
     }
