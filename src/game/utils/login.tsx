@@ -2,25 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { EventBus } from "../EventBus";
-import { useGet } from "@/hooks/useGet";
 import { WalletModal } from "@/components/WalletModal";
-import { useCurrentWallet } from "@mysten/dapp-kit";
+import { useCurrentWallet, useSignPersonalMessage } from "@mysten/dapp-kit";
 import ColyseusClient from "@/game/utils/ColyseusClient";
 import { getSuiBalance } from "./sui";
-
-type TestResponse = {
-  success: boolean;
-  message: string;
-  data?: {
-    userId: number;
-    username: string;
-    lastLoginTime: string;
-  };
-};
 
 export function ReactPhaserBridge() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { currentWallet } = useCurrentWallet();
+  const { mutate: signPersonalMessage } = useSignPersonalMessage();
 
   useEffect(() => {
     const loginHandler = async () => {
@@ -64,25 +54,24 @@ export function ReactPhaserBridge() {
         setTimeout(() => reject(new Error("⏳ Challenge timeout")), 5000);
       });
 
-      console.log("Challenge:", loginChallenge.challenge);
+      const challenge = loginChallenge.challenge;
+      console.log("Challenge:", challenge);
 
-      if (!currentWallet.features["sui:signPersonalMessage"]) {
-        console.log("features:", currentWallet.features);
-        return;
-      }
-      const signedData = await currentWallet.features["sui:signPersonalMessage"].signPersonalMessage({
-        account: currentWallet.accounts[0],
-        message: new TextEncoder().encode(loginChallenge.challenge),
+      const signature = await new Promise<string>((resolve, reject) => {
+        signPersonalMessage(
+          { message: new TextEncoder().encode(challenge) },
+          { onSuccess: (result) => resolve(result.signature), onError: (error) => reject(error) }
+        );
       });
 
-      console.log("signature:", signedData.signature);
+      console.log("signature:", signature);
 
-      // ✅ Send valid signature
       ColyseusClient.sendMessage("loginSignature", {
         address,
-        signature: signedData.signature,
-        challenge: loginChallenge.challenge,
+        signature: signature,
+        challenge: challenge,
       });
+
       const loginResponse = await new Promise<{ success: boolean; token?: string; reason?: string }>((resolve, reject) => {
         room.onMessage("loginResponse", (data) => {
           resolve(data);
@@ -101,7 +90,7 @@ export function ReactPhaserBridge() {
             suiBalance: suiBalance,
             walletName: currentWallet.name,
             walletAddress: address,
-            token: loginResponse.token, // JWT Token
+            token: loginResponse.token,
           },
         });
 

@@ -13,7 +13,6 @@ export default function App({ Component, pageProps }: AppProps) {
     <QueryClientProvider client={queryClient}>
       <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
         <WalletProvider autoConnect>
-          {/* 如果有其他 Provider 需要放在这里 */}
           <Component {...pageProps} />
         </WalletProvider>
       </SuiClientProvider>

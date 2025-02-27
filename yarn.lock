@@ -3,9 +3,9 @@
 
 
 "@0no-co/graphql.web@^1.0.5":
-  version "1.0.13"
-  resolved "https://registry.npmjs.org/@0no-co/graphql.web/-/graphql.web-1.0.13.tgz"
-  integrity sha512-jqYxOevheVTU1S36ZdzAkJIdvRp2m3OYIG5SEoKDw5NI8eVwkoI0D/Q3DYNGmXCxkA6CQuoa7zvMiDPTLqUNuw==
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/@0no-co/graphql.web/-/graphql.web-1.1.1.tgz"
+  integrity sha512-F2i3xdycesw78QCOBHmpTn7eaD2iNXGwB2gkfwxcOfBbeauYpr8RBSyJOkDrFtKtVRMclg8Sg3n1ip0ACyUuag==
 
 "@0no-co/graphqlsp@^1.12.13":
   version "1.12.16"
@@ -129,21 +129,21 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@mysten/bcs@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.npmjs.org/@mysten/bcs/-/bcs-1.3.0.tgz"
-  integrity sha512-V3V9GwIXEiUS7y8hkCwH3oseWpxs75YOOtfy7xdfyAdSftlFpTYgj5elclwYx8pgHdzg7pHdy6no77LHYGQCaQ==
+"@mysten/bcs@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/@mysten/bcs/-/bcs-1.4.0.tgz"
+  integrity sha512-YwDYspceLt8b7v6ohPvy8flQEi+smtfSG5d2A98CbUA48XBmOqTSPNmpw9wsZVVnrH2avr+BS5uVhDZT+EquYA==
   dependencies:
     bs58 "^6.0.0"
 
-"@mysten/dapp-kit@^0.14.49":
-  version "0.14.49"
-  resolved "https://registry.npmjs.org/@mysten/dapp-kit/-/dapp-kit-0.14.49.tgz"
-  integrity sha512-XwV8JDYr9uXGlDUMraheyFDGSF0NrWr+68dwOeUDOYjP2gVpWwLXYC8b7xyrjF/il9EqJ/4ECQ13mlu4ZToTEg==
+"@mysten/dapp-kit@^0.14.50":
+  version "0.14.50"
+  resolved "https://registry.npmjs.org/@mysten/dapp-kit/-/dapp-kit-0.14.50.tgz"
+  integrity sha512-zoTonryNUozeVmdg6oCRVwxvwC3k9iMm8aRHSCPOjYJFf3NPvnEli9ykM09OGLrz1T/W5hfEFt7FarUIYd8UNA==
   dependencies:
-    "@mysten/sui" "1.21.1"
-    "@mysten/wallet-standard" "0.13.25"
-    "@mysten/zksend" "0.12.15"
+    "@mysten/sui" "1.21.2"
+    "@mysten/wallet-standard" "0.13.26"
+    "@mysten/zksend" "0.12.16"
     "@radix-ui/react-dialog" "^1.1.1"
     "@radix-ui/react-dropdown-menu" "^2.1.1"
     "@radix-ui/react-slot" "^1.1.0"
@@ -153,13 +153,13 @@
     clsx "^2.1.1"
     zustand "^4.5.4"
 
-"@mysten/sui@1.21.1":
-  version "1.21.1"
-  resolved "https://registry.npmjs.org/@mysten/sui/-/sui-1.21.1.tgz"
-  integrity sha512-HVrcqiUUSPToxbQtEgARFCnLr6FMkDHhhwWdy/urk8dqr8jnNZkU3Ppr6YUgg3vRE3sXPhuIjXOCEL6Wyq6Esw==
+"@mysten/sui@^1.21.2", "@mysten/sui@1.21.2":
+  version "1.21.2"
+  resolved "https://registry.npmjs.org/@mysten/sui/-/sui-1.21.2.tgz"
+  integrity sha512-8AesvczokAUv796XiOo8af2+1IYA9bRon11Ra+rwehvqhz+sMRT8A+Cw5sDnlSc9/aQwM51JQKUnvMczNbpfYA==
   dependencies:
     "@graphql-typed-document-node/core" "^3.2.0"
-    "@mysten/bcs" "1.3.0"
+    "@mysten/bcs" "1.4.0"
     "@noble/curves" "^1.4.2"
     "@noble/hashes" "^1.4.0"
     "@scure/bip32" "^1.4.0"
@@ -172,21 +172,21 @@
     poseidon-lite "^0.2.0"
     valibot "^0.36.0"
 
-"@mysten/wallet-standard@0.13.25":
-  version "0.13.25"
-  resolved "https://registry.npmjs.org/@mysten/wallet-standard/-/wallet-standard-0.13.25.tgz"
-  integrity sha512-snaSyWmYdlzkvZk/FEiTH1GdUn3FmVEIogBMzFpShbX3rEgYStW1jvPc1+L7sgv0tf2D62xOnJBJIE1KQrU9tQ==
+"@mysten/wallet-standard@0.13.26":
+  version "0.13.26"
+  resolved "https://registry.npmjs.org/@mysten/wallet-standard/-/wallet-standard-0.13.26.tgz"
+  integrity sha512-0fRHmQ5RS0WEeSyfzdqrOWLssrZwDgR9Mw7Qhsfzq1UyDlS/GXYoL+dKpH+Uqfan33lt6hROPeXFyqw/vmF9Zg==
   dependencies:
-    "@mysten/sui" "1.21.1"
+    "@mysten/sui" "1.21.2"
     "@wallet-standard/core" "1.1.0"
 
-"@mysten/zksend@0.12.15":
-  version "0.12.15"
-  resolved "https://registry.npmjs.org/@mysten/zksend/-/zksend-0.12.15.tgz"
-  integrity sha512-tuJd0HfQ+D0WVJQom5bAtt0s1v5BYw5vFfmGqJOLYxnZpJmCEWNYJjUAJbFCjzKT4nTP67xcHemc4jTtoVKnnQ==
+"@mysten/zksend@0.12.16":
+  version "0.12.16"
+  resolved "https://registry.npmjs.org/@mysten/zksend/-/zksend-0.12.16.tgz"
+  integrity sha512-DmO3CS+mIQ4t4VeHEpu4uD3VxpImWzcM60HZMLhrn1yO2yP2FJky6Wwa58au2ziGDlY4OZoYuHsUS+7Dx2TUlw==
   dependencies:
-    "@mysten/sui" "1.21.1"
-    "@mysten/wallet-standard" "0.13.25"
+    "@mysten/sui" "1.21.2"
+    "@mysten/wallet-standard" "0.13.26"
     mitt "^3.0.1"
     nanostores "^0.10.3"
     valibot "^0.36.0"
@@ -201,32 +201,22 @@
   resolved "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-14.2.3.tgz"
   integrity sha512-3pEYo/RaGqPP0YzwnlmPN2puaF2WMLM3apt5jLW2fFdXD9+pqcoTzRk+iZsf8ta7+quAe4Q6Ms0nR0SFGFdS1A==
 
-"@noble/curves@^1.4.2", "@noble/curves@~1.7.0":
-  version "1.7.0"
-  resolved "https://registry.npmmirror.com/@noble/curves/-/curves-1.7.0.tgz"
-  integrity sha512-UTMhXK9SeDhFJVrHeUJ5uZlI6ajXg10O6Ddocf9S6GjbSBVZsJo88HzKwXznNfGpMTRDyJkqMjNDPYgf0qFWnw==
+"@noble/curves@^1.4.2", "@noble/curves@~1.8.1":
+  version "1.8.1"
+  resolved "https://registry.npmjs.org/@noble/curves/-/curves-1.8.1.tgz"
+  integrity sha512-warwspo+UYUPep0Q+vtdVB4Ugn8GGQj8iyB3gnRWsztmUHTI3S1nhdiWNsPUGL0vud7JlRRk1XEu7Lq1KGTnMQ==
   dependencies:
-    "@noble/hashes" "1.6.0"
+    "@noble/hashes" "1.7.1"
 
 "@noble/ed25519@^2.2.3":
   version "2.2.3"
   resolved "https://registry.npmjs.org/@noble/ed25519/-/ed25519-2.2.3.tgz"
   integrity sha512-iHV8eI2mRcUmOx159QNrU8vTpQ/Xm70yJ2cTk3Trc86++02usfqFoNl6x0p3JN81ZDS/1gx6xiK0OwrgqCT43g==
 
-"@noble/hashes@^1.4.0", "@noble/hashes@^1.7.1":
+"@noble/hashes@^1.4.0", "@noble/hashes@^1.7.1", "@noble/hashes@~1.7.1", "@noble/hashes@1.7.1":
   version "1.7.1"
   resolved "https://registry.npmjs.org/@noble/hashes/-/hashes-1.7.1.tgz"
   integrity sha512-B8XBPsn4vT/KJAGqDzbwztd+6Yte3P4V7iafm24bxgDe/mlRuK6xmWPuCNrKt2vDafZ8MfJLlchDG/vYafQEjQ==
-
-"@noble/hashes@~1.6.0":
-  version "1.6.1"
-  resolved "https://registry.npmjs.org/@noble/hashes/-/hashes-1.6.1.tgz"
-  integrity sha512-pq5D8h10hHBjyqX+cfBm0i8JUXJ0UhczFc4r74zbuT9XgewFo2E3J1cOaGtdZynILNmQ685YWGzGE1Zv6io50w==
-
-"@noble/hashes@1.6.0":
-  version "1.6.0"
-  resolved "https://registry.npmmirror.com/@noble/hashes/-/hashes-1.6.0.tgz"
-  integrity sha512-YUULf0Uk4/mAA89w+k3+yUYh6NrEvxZa5T6SY3wlMvE2chHkxFUUIDI8/XW1QSC357iA5pSnqt7XEhvFOqmDyQ==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -592,27 +582,27 @@
   resolved "https://registry.npmjs.org/@radix-ui/rect/-/rect-1.1.0.tgz"
   integrity sha512-A9+lCBZoaMJlVKcRBz2YByCG+Cp2t6nAnMnNba+XiWxnj6r4JUFqfsgwocMBZU9LPtdxC6wB56ySYpc7LQIoJg==
 
-"@scure/base@~1.2.1":
-  version "1.2.1"
-  resolved "https://registry.npmmirror.com/@scure/base/-/base-1.2.1.tgz"
-  integrity sha512-DGmGtC8Tt63J5GfHgfl5CuAXh96VF/LD8K9Hr/Gv0J2lAoRGlPOMpqMpMbCTOoOJMZCk2Xt+DskdDyn6dEFdzQ==
+"@scure/base@~1.2.2", "@scure/base@~1.2.4":
+  version "1.2.4"
+  resolved "https://registry.npmjs.org/@scure/base/-/base-1.2.4.tgz"
+  integrity sha512-5Yy9czTO47mqz+/J8GM6GIId4umdCk1wc1q8rKERQulIoc8VP9pzDcghv10Tl2E7R96ZUx/PhND3ESYUQX8NuQ==
 
 "@scure/bip32@^1.4.0":
-  version "1.6.0"
-  resolved "https://registry.npmmirror.com/@scure/bip32/-/bip32-1.6.0.tgz"
-  integrity sha512-82q1QfklrUUdXJzjuRU7iG7D7XiFx5PHYVS0+oeNKhyDLT7WPqs6pBcM2W5ZdwOwKCwoE1Vy1se+DHjcXwCYnA==
+  version "1.6.2"
+  resolved "https://registry.npmjs.org/@scure/bip32/-/bip32-1.6.2.tgz"
+  integrity sha512-t96EPDMbtGgtb7onKKqxRLfE5g05k7uHnHRM2xdE6BP/ZmxaLtPek4J4KfVn/90IQNrU1IOAqMgiDtUdtbe3nw==
   dependencies:
-    "@noble/curves" "~1.7.0"
-    "@noble/hashes" "~1.6.0"
-    "@scure/base" "~1.2.1"
+    "@noble/curves" "~1.8.1"
+    "@noble/hashes" "~1.7.1"
+    "@scure/base" "~1.2.2"
 
 "@scure/bip39@^1.3.0":
-  version "1.5.0"
-  resolved "https://registry.npmmirror.com/@scure/bip39/-/bip39-1.5.0.tgz"
-  integrity sha512-Dop+ASYhnrwm9+HA/HwXg7j2ZqM6yk2fyLWb5znexjctFY3+E+eU8cIWI0Pql0Qx4hPZCijlGq4OL71g+Uz30A==
+  version "1.5.4"
+  resolved "https://registry.npmjs.org/@scure/bip39/-/bip39-1.5.4.tgz"
+  integrity sha512-TFM4ni0vKvCfBpohoh+/lY05i9gRbSwXWngAsF4CABQxoaOHijxuaZ2R6cStDQ5CHtHO9aGJTr4ksVJASRRyMA==
   dependencies:
-    "@noble/hashes" "~1.6.0"
-    "@scure/base" "~1.2.1"
+    "@noble/hashes" "~1.7.1"
+    "@scure/base" "~1.2.4"
 
 "@suchipi/femver@^1.0.0":
   version "1.0.0"
@@ -1313,9 +1303,9 @@ jiti@^1.21.6:
   integrity sha512-/imKNG4EbWNrVjoNC/1H5/9GFy+tqjGBHCaSsN+P2RnPqjsLmv6UD3Ej+Kj8nBWaRAwyk7kK5ZUc+OEatnTR3A==
 
 jose@^5.6.3:
-  version "5.9.6"
-  resolved "https://registry.npmjs.org/jose/-/jose-5.9.6.tgz"
-  integrity sha512-AMlnetc9+CV9asI19zHmrgS/WYsWUwCn2R7RzlbJWD7F9eWYUTGyBmU9o6PxngtLGOiDGPRu+Uc4fhKzbpteZQ==
+  version "5.10.0"
+  resolved "https://registry.npmjs.org/jose/-/jose-5.10.0.tgz"
+  integrity sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==
 
 "js-tokens@^3.0.0 || ^4.0.0":
   version "4.0.0"

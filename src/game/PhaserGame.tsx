@@ -3,8 +3,6 @@ import StartGame from './main';
 import { EventBus } from './EventBus';
 import { ReactPhaserBridge } from './utils/login';
 import { Mail } from "@/components/mail"
-import { SuiClientProvider, WalletProvider } from '@mysten/dapp-kit';
-import { networkConfig } from '@/components/config/networkConfig';
 
 export interface IRefPhaserGame {
     game: Phaser.Game | null;
@@ -60,8 +58,8 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(function PhaserGame
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <div id="game-container" style={{ width: '100%', height: '100%' }}></div>
-              <ReactPhaserBridge />
-              <Mail />
+            <ReactPhaserBridge />
+            <Mail />
         </div >
     );
 });
