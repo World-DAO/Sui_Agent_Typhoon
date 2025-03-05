@@ -141,8 +141,7 @@ export class preloadScene extends Scene {
         this.load.image("barwoman", "animation/lucy.png");
         this.load.image("driftbottle", "img/driftbottle.png");
         this.load.audio("theme", [
-            "audio/oedipus_wizball_highscore.ogg",
-            "audio/oedipus_wizball_highscore.mp3",
+            "audio/background.mp3",
         ]);
         this.load.image("bar_menu", "img/bar_menu.png");
         this.load.image("bar_bottle", "img/bar_bottle.png");
